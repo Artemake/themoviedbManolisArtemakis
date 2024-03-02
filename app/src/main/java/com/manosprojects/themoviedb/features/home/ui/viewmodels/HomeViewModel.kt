@@ -47,11 +47,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun onFavoritePressed(movieId: String) {
+    private fun onFavoritePressed(movieId: Int) {
 
     }
 
-    private fun onMoviePressed(movieId: String) {
+    private fun onMoviePressed(movieId: Int) {
         setEffect {
             HomeContract.Effect.NavigateToMovie(movieId = movieId)
         }

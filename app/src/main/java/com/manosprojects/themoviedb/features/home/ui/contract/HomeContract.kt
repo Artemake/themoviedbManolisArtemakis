@@ -10,7 +10,7 @@ data object HomeContract {
     data class State(val showLoading: Boolean, val movies: List<HomeMovieModel>) : UiState
 
     sealed interface Effect : UiEffect {
-        data class NavigateToMovie(val movieId: String) : Effect
+        data class NavigateToMovie(val movieId: Int) : Effect
         data class ShowSnack(val message: String) : Effect
     }
 

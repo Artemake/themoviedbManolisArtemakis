@@ -74,4 +74,9 @@ dependencies {
 
     // hilt and compose navigation
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // retrofit
+    val retrofitVersion = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
 }
