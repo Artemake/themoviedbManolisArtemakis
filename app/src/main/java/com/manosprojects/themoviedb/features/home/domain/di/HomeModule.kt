@@ -1,5 +1,11 @@
 package com.manosprojects.themoviedb.features.home.domain.di
 
+import com.manosprojects.themoviedb.features.home.domain.repository.MoviesRepository
+import com.manosprojects.themoviedb.features.home.domain.repository.MoviesRepositoryImpl
+import com.manosprojects.themoviedb.features.home.domain.source.local.MoviesLocalSource
+import com.manosprojects.themoviedb.features.home.domain.source.local.MoviesLocalSourceImpL
+import com.manosprojects.themoviedb.features.home.domain.source.remote.MoviesRemoteSource
+import com.manosprojects.themoviedb.features.home.domain.source.remote.MoviesRemoteSourceImpl
 import com.manosprojects.themoviedb.features.home.domain.usecase.GetMoviesUC
 import com.manosprojects.themoviedb.features.home.domain.usecase.GetMoviesUCImp
 import com.manosprojects.themoviedb.features.home.domain.usecase.LoadMoviesUC
@@ -18,4 +24,13 @@ interface HomeModule {
 
     @Binds
     fun bindLoadMoviesUC(loadMoviesUCImpl: LoadMoviesUCImpl): LoadMoviesUC
+
+    @Binds
+    fun bindMoviesRepository(moviesRepositoryImpl: MoviesRepositoryImpl): MoviesRepository
+
+    @Binds
+    fun bindMoviesLocalSource(moviesLocalSourceImpl: MoviesLocalSourceImpL): MoviesLocalSource
+
+    @Binds
+    fun bindMoviesRemoteSource(moviesRemoteSourceImpl: MoviesRemoteSourceImpl): MoviesRemoteSource
 }
