@@ -6,10 +6,8 @@ import com.manosprojects.themoviedb.mvibase.UiEvent
 import com.manosprojects.themoviedb.mvibase.UiState
 
 data object HomeContract {
-    sealed interface State : UiState {
-        data object Initial : State
-        data class Loaded(val showLoading: Boolean, val movies: List<HomeMovieModel>) : State
-    }
+
+    data class State(val showLoading: Boolean, val movies: List<HomeMovieModel>) : UiState
 
     sealed interface Effect : UiEffect {
         data class NavigateToMovie(val movieId: String) : Effect

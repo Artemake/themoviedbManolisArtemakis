@@ -23,30 +23,26 @@ fun HomeScreen(
     }
 
     val state = homeViewModel.uiState.collectAsState().value
-    when (state) {
-        is HomeContract.State.Initial -> LoadingAnimation()
-        is HomeContract.State.Loaded -> {
-            LazyColumn {
-                items(state.movies) {
-                    MovieComponent(
-                        title = it.title,
-                        releaseDate = it.releaseDate,
-                        rating = it.rating.toString(),
-                        onFavouritePressed = {
-                            homeViewModel.setEvent(
-                                HomeContract.Event.OnFavoritePressed(it)
-                            )
-                        }, onMoviePressed = {
-                            homeViewModel.setEvent(
-                                HomeContract.Event.OnMoviePressed(it)
-                            )
-                        })
-                }
-                item {
-                    if (state.showLoading) {
-                        LoadingAnimation()
-                    }
-                }
+
+    LazyColumn {
+        items(state.movies) {
+            MovieComponent(
+                title = it.title,
+                releaseDate = it.releaseDate,
+                rating = it.rating.toString(),
+                onFavouritePressed = {
+                    homeViewModel.setEvent(
+                        HomeContract.Event.OnFavoritePressed(it)
+                    )
+                }, onMoviePressed = {
+                    homeViewModel.setEvent(
+                        HomeContract.Event.OnMoviePressed(it)
+                    )
+                })
+        }
+        item {
+            if (state.showLoading) {
+                LoadingAnimation()
             }
         }
     }
