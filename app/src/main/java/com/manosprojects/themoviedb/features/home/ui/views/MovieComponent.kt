@@ -1,5 +1,7 @@
 package com.manosprojects.themoviedb.features.home.ui.views
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -19,6 +22,7 @@ fun MovieComponent(
     title: String,
     releaseDate: String,
     rating: String,
+    image: Bitmap?,
     onFavouritePressed: () -> Unit,
     onMoviePressed: () -> Unit,
 ) {
@@ -30,6 +34,9 @@ fun MovieComponent(
             .background(color = MaterialTheme.colorScheme.surface)
     ) {
         Column {
+            image?.let {
+                Image(bitmap = it.asImageBitmap(), contentDescription = null)
+            }
             Text(text = title)
             Text(text = releaseDate)
             Text(text = rating)
@@ -44,6 +51,7 @@ private fun MovieComponentPreview() {
         title = "Title",
         releaseDate = "23-12-25",
         rating = "5.0",
+        image = null,
         onFavouritePressed = { },
         onMoviePressed = {})
 }

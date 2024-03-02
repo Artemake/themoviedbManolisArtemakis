@@ -1,9 +1,12 @@
 package com.manosprojects.themoviedb.features.home.domain.source.remote.api
 
 import com.manosprojects.themoviedb.features.home.domain.source.remote.data.MoviesResponse
+import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
+import retrofit2.http.Streaming
+import retrofit2.http.Url
 
 interface MoviesAPI {
 
@@ -14,4 +17,7 @@ interface MoviesAPI {
     @GET("movie/popular?language=en-US")
     suspend fun getMovies(@Query("page") page: Int): MoviesResponse
 
+    @Streaming
+    @GET
+    suspend fun downloadImage(@Url imageUrl: String): ResponseBody
 }

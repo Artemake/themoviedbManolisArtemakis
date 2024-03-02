@@ -83,6 +83,7 @@ class HomeViewModel @Inject constructor(
             movieId = movieId,
             releaseDate = releaseDate,
             rating = rating,
+            image = image
         )
     }
 }
