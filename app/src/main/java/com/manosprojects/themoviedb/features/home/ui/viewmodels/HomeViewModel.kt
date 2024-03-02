@@ -18,11 +18,17 @@ class HomeViewModel @Inject constructor(
 ) :
     BaseViewModel<HomeContract.Event, HomeContract.State, HomeContract.Effect>() {
 
+    private val errorMessage = "Something went wrong with the request"
+
     init {
         viewModelScope.launch {
             getMoviesUC.execute().collect {
-                setState {
-                    copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
+                it?.let {
+                    setState {
+                        copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
+                    }
+                } ?: setEffect {
+                    HomeContract.Effect.ShowSnack(message = errorMessage)
                 }
             }
         }
@@ -57,12 +63,16 @@ class HomeViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val newMovies = loadMoviesUC.execute()
-            setState {
-                val newMoviesList = buildList {
-                    addAll(movies)
-                    addAll(newMovies.map { dMovie -> dMovie.mapToUIModel() })
+            newMovies?.let {
+                setState {
+                    val newMoviesList = buildList {
+                        addAll(movies)
+                        addAll(newMovies.map { dMovie -> dMovie.mapToUIModel() })
+                    }
+                    copy(showLoading = false, movies = newMoviesList)
                 }
-                copy(showLoading = false, movies = newMoviesList)
+            } ?: setEffect {
+                HomeContract.Effect.ShowSnack(message = errorMessage)
             }
         }
     }

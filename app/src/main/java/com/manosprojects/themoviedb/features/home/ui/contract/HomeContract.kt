@@ -11,6 +11,7 @@ data object HomeContract {
 
     sealed interface Effect : UiEffect {
         data class NavigateToMovie(val movieId: String) : Effect
+        data class ShowSnack(val message: String) : Effect
     }
 
     sealed interface Event : UiEvent {
