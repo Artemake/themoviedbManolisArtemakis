@@ -5,10 +5,12 @@ import android.graphics.BitmapFactory
 import com.manosprojects.themoviedb.features.home.domain.data.DMovie
 import com.manosprojects.themoviedb.features.home.domain.source.remote.api.MoviesAPI
 import com.manosprojects.themoviedb.features.home.domain.source.remote.data.RMovie
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 interface MoviesRemoteSource {
-    suspend fun loadMovies(): List<DMovie>?
+    fun loadMovies(): Flow<List<DMovie>?>
 }
 
 class MoviesRemoteSourceImpl @Inject constructor(
@@ -17,18 +19,21 @@ class MoviesRemoteSourceImpl @Inject constructor(
 
     private var pageCount = 1
 
+    // TODO: to remove and adjust this to place it in the NetworkDI
     private val baseUrl = "https://image.tmdb.org/t/p/w300"
 
-    override suspend fun loadMovies(): List<DMovie>? {
-        return try {
-            moviesAPI.getMovies(pageCount).results.map {
-                val bitmap = downloadImage(it.backdrop_path)
-                it.mapToDomain(bitmap)
-            }.also {
-                pageCount++
+    override fun loadMovies(): Flow<List<DMovie>?> {
+        return flow {
+            try {
+                val list: MutableList<DMovie> = mutableListOf()
+                moviesAPI.getMovies(pageCount).results.map {
+                    val bitmap = downloadImage(it.backdrop_path)
+                    list.add(it.mapToDomain(bitmap))
+                    emit(list)
+                }
+            } catch (e: Exception) {
+                emit(null)
             }
-        } catch (e: Exception) {
-            null
         }
     }
 

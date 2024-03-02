@@ -62,17 +62,18 @@ class HomeViewModel @Inject constructor(
             copy(showLoading = true)
         }
         viewModelScope.launch {
-            val newMovies = loadMoviesUC.execute()
-            newMovies?.let {
-                setState {
-                    val newMoviesList = buildList {
-                        addAll(movies)
-                        addAll(newMovies.map { dMovie -> dMovie.mapToUIModel() })
+            loadMoviesUC.execute().collect { newMovies ->
+                newMovies?.let {
+                    setState {
+                        val newMoviesList = buildList {
+                            addAll(movies)
+                            addAll(newMovies.map { dMovie -> dMovie.mapToUIModel() })
+                        }
+                        copy(showLoading = false, movies = newMoviesList)
                     }
-                    copy(showLoading = false, movies = newMoviesList)
+                } ?: setEffect {
+                    HomeContract.Effect.ShowSnack(message = errorMessage)
                 }
-            } ?: setEffect {
-                HomeContract.Effect.ShowSnack(message = errorMessage)
             }
         }
     }

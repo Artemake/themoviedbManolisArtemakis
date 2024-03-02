@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 interface MoviesRepository {
-    suspend fun getInitialMovies(): Flow<List<DMovie>?>
-    suspend fun loadMovies(): List<DMovie>?
+    fun getInitialMovies(): Flow<List<DMovie>?>
+    fun loadMovies(): Flow<List<DMovie>?>
 }
 
 class MoviesRepositoryImpl @Inject constructor(
@@ -19,17 +19,17 @@ class MoviesRepositoryImpl @Inject constructor(
     private val moviesRemoteSource: MoviesRemoteSource,
 ) : MoviesRepository {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getInitialMovies(): Flow<List<DMovie>?> {
+    override fun getInitialMovies(): Flow<List<DMovie>?> {
         return moviesLocalSource.getMovies().flatMapLatest {
             if (it.isNotEmpty()) {
                 flowOf(it)
             } else {
-                flowOf(moviesRemoteSource.loadMovies())
+                moviesRemoteSource.loadMovies()
             }
         }
     }
 
-    override suspend fun loadMovies(): List<DMovie>? {
+    override fun loadMovies(): Flow<List<DMovie>?> {
         return moviesRemoteSource.loadMovies()
     }
 
