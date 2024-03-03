@@ -9,6 +9,8 @@ import com.manosprojects.themoviedb.domain.source.remote.MoviesRemoteSourceImpl
 import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
 import com.manosprojects.themoviedb.domain.usecase.GetMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.GetMoviesUCImp
+import com.manosprojects.themoviedb.domain.usecase.LoadMovieDetails
+import com.manosprojects.themoviedb.domain.usecase.LoadMovieDetailsImpl
 import com.manosprojects.themoviedb.domain.usecase.LoadMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.LoadMoviesUCImpl
 import com.manosprojects.themoviedb.domain.usecase.MarkMovieAsFavouriteUC
@@ -33,6 +35,9 @@ interface MoviesModule {
 
     @Binds
     fun bindMarkMovieAsFavouriteUC(markMovieAsFavouriteUCImpl: MarkMovieAsFavouriteUCImpl): MarkMovieAsFavouriteUC
+
+    @Binds
+    fun bindLoadMovieDetailsUC(loadMovieDetailsImpl: LoadMovieDetailsImpl): LoadMovieDetails
 
     @Binds
     fun bindMoviesRepository(moviesRepositoryImpl: MoviesRepositoryImpl): MoviesRepository

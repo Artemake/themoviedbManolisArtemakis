@@ -67,7 +67,7 @@ fun MovieDBNavHost(
 
             val movieIdKey = "movieId"
             composable(route = Route.MovieDetails.getBaseDestination()) { navBaskStackEntry ->
-                val movieId = navBaskStackEntry.arguments?.getString(movieIdKey)
+                val movieId = navBaskStackEntry.arguments?.getLong(movieIdKey)
                 movieId?.let {
                     MovieDetailsScreen(
                         movieId = movieId,

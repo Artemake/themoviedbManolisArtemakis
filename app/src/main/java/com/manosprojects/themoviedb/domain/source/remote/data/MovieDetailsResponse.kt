@@ -6,6 +6,7 @@ data class MovieDetailsResponse(
     val genres: List<Genre>,
     val release_date: String,
     val vote_average: Float,
+    val backdrop_path: String,
     val runtime: Int,
     val overview: String,
 )

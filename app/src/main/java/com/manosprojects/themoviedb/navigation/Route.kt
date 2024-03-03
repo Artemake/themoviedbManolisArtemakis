@@ -7,7 +7,7 @@ sealed class Route(val destination: String) {
     data object HomeRoute : Route("home")
 
     data class MovieDetails(
-        private val movieId: String
+        private val movieId: Long
     ) : Route("$movieBaseDestination/$movieId") {
         companion object {
             const val movieBaseDestination = "moviedetails"

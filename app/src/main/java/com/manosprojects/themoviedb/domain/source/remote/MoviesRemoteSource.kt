@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.data.DMovieDetails
+import com.manosprojects.themoviedb.domain.data.DReview
 import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
 import com.manosprojects.themoviedb.domain.source.remote.data.RMovie
 import com.manosprojects.themoviedb.utils.formatRMovieDateToLocalDate
@@ -13,7 +14,7 @@ import javax.inject.Inject
 
 interface MoviesRemoteSource {
     fun loadMovies(): Flow<List<DMovie>?>
-    suspend fun loadMovieDetails(movieId: String): DMovieDetails?
+    fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?>
 }
 
 class MoviesRemoteSourceImpl @Inject constructor(
@@ -41,9 +42,45 @@ class MoviesRemoteSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadMovieDetails(movieId: String): DMovieDetails? {
-
-        return null
+    override fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?> {
+        return flow {
+            try {
+                val movieDetailsResponse = moviesAPI.getMovieDetails(movieId = movieId)
+                val image = downloadImage(movieDetailsResponse.backdrop_path)
+                val similarMoviesResponse = moviesAPI.getSimilarMovies(movieId = movieId)
+                val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
+                val dMovies = mutableListOf<DMovie>()
+                similarMoviesResponse.results.map {
+                    try {
+                        val bitmap = downloadImage(it.backdrop_path)
+                        dMovies.add(it.mapToDomain(bitmap))
+                        emit(
+                            DMovieDetails(
+                                movieId = movieDetailsResponse.id,
+                                title = movieDetailsResponse.title,
+                                releaseDate = formatRMovieDateToLocalDate(movieDetailsResponse.release_date),
+                                rating = movieDetailsResponse.vote_average,
+                                image = image,
+                                genres = movieDetailsResponse.genres.map { it.name },
+                                runtime = movieDetailsResponse.runtime,
+                                description = movieDetailsResponse.overview,
+                                reviews = reviewsResponse.results.map {
+                                    DReview(
+                                        author = it.author,
+                                        content = it.content
+                                    )
+                                },
+                                similarMovies = dMovies,
+                            )
+                        )
+                    } catch (e: Exception) {
+                        /* do nothing */
+                    }
+                }
+            } catch (e: Exception) {
+                emit(null)
+            }
+        }
     }
 
     private suspend fun downloadImage(imagePath: String): Bitmap? {

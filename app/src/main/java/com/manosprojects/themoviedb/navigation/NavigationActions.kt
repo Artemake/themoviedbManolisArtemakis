@@ -4,5 +4,5 @@ import androidx.navigation.NavController
 
 
 fun NavController.navigateToMovieDetails(movieId: Long) {
-    navigate(Route.MovieDetails(movieId = movieId.toString()).destination)
+    navigate(Route.MovieDetails(movieId = movieId).destination)
 }

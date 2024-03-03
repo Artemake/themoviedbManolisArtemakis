@@ -1,6 +1,7 @@
 package com.manosprojects.themoviedb.domain.repository
 
 import com.manosprojects.themoviedb.domain.data.DMovie
+import com.manosprojects.themoviedb.domain.data.DMovieDetails
 import com.manosprojects.themoviedb.domain.source.local.MoviesLocalSource
 import com.manosprojects.themoviedb.domain.source.remote.MoviesRemoteSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +14,7 @@ import javax.inject.Inject
 interface MoviesRepository {
     fun getInitialMovies(): Flow<List<DMovie>?>
     fun loadMovies(): Flow<List<DMovie>?>
+    fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?>
     fun markMovieAsFavourite(movieId: Long, isFavourite: Boolean)
 }
 
@@ -40,7 +42,25 @@ class MoviesRepositoryImpl @Inject constructor(
     }
 
     override fun loadMovies(): Flow<List<DMovie>?> {
-        return moviesRemoteSource.loadMovies()
+        return moviesRemoteSource.loadMovies().map { dMoviesList ->
+            dMoviesList?.map { dMovie ->
+                dMovie.copy(
+                    isFavourite = moviesLocalSource.isMovieFavourite(
+                        dMovie.movieId
+                    )
+                )
+            }
+        }
+    }
+
+    override fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?> {
+        return moviesRemoteSource.loadMovieDetails(movieId = movieId).map {
+            it?.copy(
+                isFavourite = moviesLocalSource.isMovieFavourite(
+                    it.movieId
+                )
+            )
+        }
     }
 
     override fun markMovieAsFavourite(movieId: Long, isFavourite: Boolean) {
