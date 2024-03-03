@@ -52,28 +52,26 @@ class MoviesRemoteSourceImpl @Inject constructor(
                 val dMovies = mutableListOf<DMovie>()
                 similarMoviesResponse.results.map { rMovie ->
                     val bitmap = downloadImage(rMovie.backdrop_path)
-                    bitmap?.let { bitmapNotNull ->
-                        dMovies.add(rMovie.mapToDomain(bitmapNotNull))
-                        emit(
-                            DMovieDetails(
-                                movieId = movieDetailsResponse.id,
-                                title = movieDetailsResponse.title,
-                                releaseDate = formatRMovieDateToLocalDate(movieDetailsResponse.release_date),
-                                rating = movieDetailsResponse.vote_average,
-                                image = image,
-                                genres = movieDetailsResponse.genres.map { it.name },
-                                runtime = movieDetailsResponse.runtime,
-                                description = movieDetailsResponse.overview,
-                                reviews = reviewsResponse.results.map {
-                                    DReview(
-                                        author = it.author,
-                                        content = it.content
-                                    )
-                                },
-                                similarMovies = dMovies,
-                            )
+                    dMovies.add(rMovie.mapToDomain(bitmap))
+                    emit(
+                        DMovieDetails(
+                            movieId = movieDetailsResponse.id,
+                            title = movieDetailsResponse.title,
+                            releaseDate = formatRMovieDateToLocalDate(movieDetailsResponse.release_date),
+                            rating = movieDetailsResponse.vote_average,
+                            image = image,
+                            genres = movieDetailsResponse.genres.map { it.name },
+                            runtime = movieDetailsResponse.runtime,
+                            description = movieDetailsResponse.overview,
+                            reviews = reviewsResponse.results.map {
+                                DReview(
+                                    author = it.author,
+                                    content = it.content
+                                )
+                            },
+                            similarMovies = dMovies,
                         )
-                    }
+                    )
                 }
             } catch (e: Exception) {
                 emit(null)

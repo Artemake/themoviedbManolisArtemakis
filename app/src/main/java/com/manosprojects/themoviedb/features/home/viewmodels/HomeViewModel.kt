@@ -8,7 +8,7 @@ import com.manosprojects.themoviedb.domain.usecase.MarkMovieAsFavouriteUC
 import com.manosprojects.themoviedb.features.home.contract.HomeContract
 import com.manosprojects.themoviedb.features.home.data.HomeMovieModel
 import com.manosprojects.themoviedb.mvibase.BaseViewModel
-import com.manosprojects.themoviedb.utils.formatDMovieDateToUIDate
+import com.manosprojects.themoviedb.utils.formatDomainDateToUIDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -115,7 +115,7 @@ class HomeViewModel @Inject constructor(
         return HomeMovieModel(
             title = title,
             movieId = movieId,
-            releaseDate = formatDMovieDateToUIDate(releaseDate),
+            releaseDate = formatDomainDateToUIDate(releaseDate),
             rating = rating,
             image = image,
             isFavorite = isFavourite,

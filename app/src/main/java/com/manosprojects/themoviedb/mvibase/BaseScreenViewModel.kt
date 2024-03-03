@@ -15,9 +15,6 @@ abstract class BaseViewModel<Event : UiEvent, State : UiState, Effect : UiEffect
     private val initialState: State by lazy { createInitialState() }
     abstract fun createInitialState(): State
 
-    val currentState: State
-        get() = uiState.value
-
     private val _uiState: MutableStateFlow<State> = MutableStateFlow(initialState)
     val uiState = _uiState.asStateFlow()
 
@@ -40,7 +37,7 @@ abstract class BaseViewModel<Event : UiEvent, State : UiState, Effect : UiEffect
     }
 
     protected fun setState(reduce: State.() -> State) {
-        val newState = currentState.reduce()
+        val newState = _uiState.value.reduce()
         _uiState.value = newState
     }
 

@@ -3,7 +3,7 @@ package com.manosprojects.themoviedb.utils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-fun formatDMovieDateToUIDate(date: LocalDate): String {
+fun formatDomainDateToUIDate(date: LocalDate): String {
     val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
     return formatter.format(date)
 }
