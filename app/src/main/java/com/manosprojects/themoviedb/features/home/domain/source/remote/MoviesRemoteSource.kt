@@ -20,7 +20,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
     private var pageCount = 1
 
     // TODO: to remove and adjust this to place it in the NetworkDI
-    private val baseUrl = "https://image.tmdb.org/t/p/w300"
+    private val baseUrl = "https://image.tmdb.org/t/p/original"
 
     override fun loadMovies(): Flow<List<DMovie>?> {
         return flow {

@@ -44,7 +44,7 @@ fun HomeScreen(
             MovieComponent(
                 title = item.title,
                 releaseDate = item.releaseDate,
-                rating = item.rating.toString(),
+                rating = item.rating,
                 image = item.image,
                 isFavourite = item.isFavorite,
                 onFavouritePressed = {
