@@ -10,11 +10,11 @@ sealed class Route(val destination: String) {
         private val movieId: String
     ) : Route("$movieBaseDestination/$movieId") {
         companion object {
-            const val movieBaseDestination = "moviedetails/"
+            const val movieBaseDestination = "moviedetails"
             private const val movieIdKey = "movieId"
 
             fun getBaseDestination(): String {
-                return "$movieBaseDestination/$movieIdKey"
+                return "$movieBaseDestination/{$movieIdKey}"
             }
         }
     }
