@@ -2,6 +2,7 @@ package com.manosprojects.themoviedb.domain.data
 
 import android.graphics.Bitmap
 import java.time.LocalDate
+import kotlin.time.Duration
 
 data class DMovieDetails(
     val movieId: Long,
@@ -11,7 +12,7 @@ data class DMovieDetails(
     val image: Bitmap?,
     val isFavourite: Boolean = false,
     val genres: List<String>,
-    val runtime: Int,
+    val runtime: Duration,
     val description: String,
     val reviews: List<DReview>,
     val similarMovies: List<DMovie>

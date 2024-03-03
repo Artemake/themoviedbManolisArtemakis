@@ -7,7 +7,8 @@ import com.manosprojects.themoviedb.domain.data.DMovieDetails
 import com.manosprojects.themoviedb.domain.data.DReview
 import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
 import com.manosprojects.themoviedb.domain.source.remote.data.RMovie
-import com.manosprojects.themoviedb.utils.formatRMovieDateToLocalDate
+import com.manosprojects.themoviedb.utils.formatRDateToLocalDate
+import com.manosprojects.themoviedb.utils.formatRDurationToDuration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -51,17 +52,17 @@ class MoviesRemoteSourceImpl @Inject constructor(
                 val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
                 val dMovies = mutableListOf<DMovie>()
                 similarMoviesResponse.results.map { rMovie ->
-                    val bitmap = downloadImage(rMovie.backdrop_path)
+                    val bitmap = downloadImage(rMovie.poster_path)
                     dMovies.add(rMovie.mapToDomain(bitmap))
                     emit(
                         DMovieDetails(
                             movieId = movieDetailsResponse.id,
                             title = movieDetailsResponse.title,
-                            releaseDate = formatRMovieDateToLocalDate(movieDetailsResponse.release_date),
+                            releaseDate = formatRDateToLocalDate(movieDetailsResponse.release_date),
                             rating = movieDetailsResponse.vote_average,
                             image = image,
                             genres = movieDetailsResponse.genres.map { it.name },
-                            runtime = movieDetailsResponse.runtime,
+                            runtime = formatRDurationToDuration(movieDetailsResponse.runtime),
                             description = movieDetailsResponse.overview,
                             reviews = reviewsResponse.results.map {
                                 DReview(
@@ -94,7 +95,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
         return DMovie(
             movieId = id,
             title = title,
-            releaseDate = formatRMovieDateToLocalDate(release_date),
+            releaseDate = formatRDateToLocalDate(release_date),
             rating = vote_average,
             image = bitmap,
         )

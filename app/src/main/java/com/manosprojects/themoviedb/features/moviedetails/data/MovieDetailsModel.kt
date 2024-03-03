@@ -10,7 +10,7 @@ data class MovieDetailsModel(
     val image: Bitmap?,
     val isFavourite: Boolean = false,
     val genres: List<String>,
-    val runtime: Int,
+    val runtime: String,
     val description: String,
     val reviews: List<MovieDetailsReviewModel>,
     val similarMovies: List<Bitmap>

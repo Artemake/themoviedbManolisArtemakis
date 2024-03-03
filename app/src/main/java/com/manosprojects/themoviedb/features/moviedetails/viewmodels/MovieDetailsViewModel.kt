@@ -8,6 +8,7 @@ import com.manosprojects.themoviedb.features.moviedetails.contract.MovieDetailsC
 import com.manosprojects.themoviedb.features.moviedetails.data.MovieDetailsModel
 import com.manosprojects.themoviedb.features.moviedetails.data.MovieDetailsReviewModel
 import com.manosprojects.themoviedb.utils.formatDomainDateToUIDate
+import com.manosprojects.themoviedb.utils.formatDurationToUITime
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -50,15 +51,15 @@ class MovieDetailsViewModel @AssistedInject constructor(
             image = image,
             isFavourite = isFavourite,
             genres = genres,
-            runtime = runtime,
+            runtime = formatDurationToUITime(runtime),
             description = description,
-            similarMovies = similarMovies.map { it.image }.filterNotNull(),
             reviews = reviews.map {
                 MovieDetailsReviewModel(
                     author = it.author,
                     content = it.content
                 )
-            },
+            }.take(3),
+            similarMovies = similarMovies.map { it.image }.filterNotNull().take(6),
         )
     }
 }

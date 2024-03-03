@@ -6,4 +6,5 @@ data class RMovie(
     val release_date: String,
     val vote_average: Float,
     val backdrop_path: String,
+    val poster_path: String,
 )

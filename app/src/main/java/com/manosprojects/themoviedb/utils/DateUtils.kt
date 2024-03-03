@@ -8,7 +8,7 @@ fun formatDomainDateToUIDate(date: LocalDate): String {
     return formatter.format(date)
 }
 
-fun formatRMovieDateToLocalDate(date: String): LocalDate {
+fun formatRDateToLocalDate(date: String): LocalDate {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     return LocalDate.parse(date, formatter)
 }
