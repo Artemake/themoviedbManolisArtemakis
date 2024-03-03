@@ -44,14 +44,14 @@ class MoviesRemoteSourceImpl @Inject constructor(
 
     override fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?> {
         return flow {
-            try {
+            // try {
                 val movieDetailsResponse = moviesAPI.getMovieDetails(movieId = movieId)
                 val image = downloadImage(movieDetailsResponse.backdrop_path)
                 val similarMoviesResponse = moviesAPI.getSimilarMovies(movieId = movieId)
                 val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
                 val dMovies = mutableListOf<DMovie>()
                 similarMoviesResponse.results.map {
-                    try {
+                    //try {
                         val bitmap = downloadImage(it.backdrop_path)
                         dMovies.add(it.mapToDomain(bitmap))
                         emit(
@@ -73,13 +73,13 @@ class MoviesRemoteSourceImpl @Inject constructor(
                                 similarMovies = dMovies,
                             )
                         )
-                    } catch (e: Exception) {
-                        /* do nothing */
-                    }
+//                    } catch (e: Exception) {
+//                        /* do nothing */
+//                    }
                 }
-            } catch (e: Exception) {
-                emit(null)
-            }
+//            } catch (e: Exception) {
+//                emit(null)
+//            }
         }
     }
 

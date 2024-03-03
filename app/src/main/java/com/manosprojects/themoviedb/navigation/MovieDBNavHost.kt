@@ -15,9 +15,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.manosprojects.themoviedb.R
 import com.manosprojects.themoviedb.features.home.views.HomeScreen
 import com.manosprojects.themoviedb.features.moviedetails.views.MovieDetailsScreen
@@ -65,8 +67,11 @@ fun MovieDBNavHost(
                 )
             }
 
-            val movieIdKey = "movieId"
-            composable(route = Route.MovieDetails.getBaseDestination()) { navBaskStackEntry ->
+            val movieIdKey = Route.MovieDetails.movieIdKey
+            composable(
+                route = Route.MovieDetails.getBaseDestination(),
+                arguments = listOf(navArgument(movieIdKey) { type = NavType.LongType })
+            ) { navBaskStackEntry ->
                 val movieId = navBaskStackEntry.arguments?.getLong(movieIdKey)
                 movieId?.let {
                     MovieDetailsScreen(

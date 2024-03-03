@@ -11,7 +11,7 @@ sealed class Route(val destination: String) {
     ) : Route("$movieBaseDestination/$movieId") {
         companion object {
             const val movieBaseDestination = "moviedetails"
-            private const val movieIdKey = "movieId"
+            const val movieIdKey = "movieId"
 
             fun getBaseDestination(): String {
                 return "$movieBaseDestination/{$movieIdKey}"
