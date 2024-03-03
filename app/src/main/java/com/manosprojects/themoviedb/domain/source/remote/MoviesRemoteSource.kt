@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
 import com.manosprojects.themoviedb.domain.source.remote.data.RMovie
+import com.manosprojects.themoviedb.utils.formatRMovieDateToLocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -53,7 +54,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
         return DMovie(
             movieId = id,
             title = title,
-            releaseDate = release_date,
+            releaseDate = formatRMovieDateToLocalDate(release_date),
             rating = vote_average,
             image = bitmap,
         )
