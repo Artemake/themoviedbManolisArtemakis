@@ -1,4 +1,4 @@
-package com.manosprojects.themoviedb.features.home.domain.source.remote.data
+package com.manosprojects.themoviedb.domain.source.remote.data
 
 data class RMovie(
     val id: Int,

@@ -1,4 +1,4 @@
-package com.manosprojects.themoviedb.features.home.ui.views
+package com.manosprojects.themoviedb.features.home.views
 
 import android.content.Context
 import android.widget.Toast
@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.manosprojects.themoviedb.features.home.ui.contract.HomeContract
-import com.manosprojects.themoviedb.features.home.ui.viewmodels.HomeViewModel
+import com.manosprojects.themoviedb.features.home.contract.HomeContract
+import com.manosprojects.themoviedb.features.home.viewmodels.HomeViewModel
 
 @Composable
 fun HomeScreen(

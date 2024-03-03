@@ -1,4 +1,4 @@
-package com.manosprojects.themoviedb.features.home.ui.data
+package com.manosprojects.themoviedb.features.home.data
 
 import android.graphics.Bitmap
 

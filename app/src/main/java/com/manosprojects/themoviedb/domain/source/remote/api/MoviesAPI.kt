@@ -1,6 +1,6 @@
-package com.manosprojects.themoviedb.features.home.domain.source.remote.api
+package com.manosprojects.themoviedb.domain.source.remote.api
 
-import com.manosprojects.themoviedb.features.home.domain.source.remote.data.MoviesResponse
+import com.manosprojects.themoviedb.domain.source.remote.data.MoviesResponse
 import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Headers

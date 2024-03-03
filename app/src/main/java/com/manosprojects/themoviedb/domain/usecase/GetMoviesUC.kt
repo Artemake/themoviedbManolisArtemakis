@@ -1,7 +1,7 @@
-package com.manosprojects.themoviedb.features.home.domain.usecase
+package com.manosprojects.themoviedb.domain.usecase
 
-import com.manosprojects.themoviedb.features.home.domain.data.DMovie
-import com.manosprojects.themoviedb.features.home.domain.repository.MoviesRepository
+import com.manosprojects.themoviedb.domain.data.DMovie
+import com.manosprojects.themoviedb.domain.repository.MoviesRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

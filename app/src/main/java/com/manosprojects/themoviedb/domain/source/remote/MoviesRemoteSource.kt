@@ -1,10 +1,10 @@
-package com.manosprojects.themoviedb.features.home.domain.source.remote
+package com.manosprojects.themoviedb.domain.source.remote
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.manosprojects.themoviedb.features.home.domain.data.DMovie
-import com.manosprojects.themoviedb.features.home.domain.source.remote.api.MoviesAPI
-import com.manosprojects.themoviedb.features.home.domain.source.remote.data.RMovie
+import com.manosprojects.themoviedb.domain.data.DMovie
+import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
+import com.manosprojects.themoviedb.domain.source.remote.data.RMovie
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

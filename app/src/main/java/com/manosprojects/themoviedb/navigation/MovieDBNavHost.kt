@@ -19,7 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.manosprojects.themoviedb.R
-import com.manosprojects.themoviedb.features.home.ui.views.HomeScreen
+import com.manosprojects.themoviedb.features.home.views.HomeScreen
 import com.manosprojects.themoviedb.features.moviedetails.views.MovieDetailsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)

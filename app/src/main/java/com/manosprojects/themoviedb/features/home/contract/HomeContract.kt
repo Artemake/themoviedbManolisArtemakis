@@ -1,6 +1,6 @@
-package com.manosprojects.themoviedb.features.home.ui.contract
+package com.manosprojects.themoviedb.features.home.contract
 
-import com.manosprojects.themoviedb.features.home.ui.data.HomeMovieModel
+import com.manosprojects.themoviedb.features.home.data.HomeMovieModel
 import com.manosprojects.themoviedb.mvibase.UiEffect
 import com.manosprojects.themoviedb.mvibase.UiEvent
 import com.manosprojects.themoviedb.mvibase.UiState

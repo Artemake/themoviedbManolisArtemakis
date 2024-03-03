@@ -1,12 +1,12 @@
-package com.manosprojects.themoviedb.features.home.ui.viewmodels
+package com.manosprojects.themoviedb.features.home.viewmodels
 
 import androidx.lifecycle.viewModelScope
-import com.manosprojects.themoviedb.features.home.domain.data.DMovie
-import com.manosprojects.themoviedb.features.home.domain.usecase.GetMoviesUC
-import com.manosprojects.themoviedb.features.home.domain.usecase.LoadMoviesUC
-import com.manosprojects.themoviedb.features.home.domain.usecase.MarkMovieAsFavouriteUC
-import com.manosprojects.themoviedb.features.home.ui.contract.HomeContract
-import com.manosprojects.themoviedb.features.home.ui.data.HomeMovieModel
+import com.manosprojects.themoviedb.domain.data.DMovie
+import com.manosprojects.themoviedb.domain.usecase.GetMoviesUC
+import com.manosprojects.themoviedb.domain.usecase.LoadMoviesUC
+import com.manosprojects.themoviedb.domain.usecase.MarkMovieAsFavouriteUC
+import com.manosprojects.themoviedb.features.home.contract.HomeContract
+import com.manosprojects.themoviedb.features.home.data.HomeMovieModel
 import com.manosprojects.themoviedb.mvibase.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async

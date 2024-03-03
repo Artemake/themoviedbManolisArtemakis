@@ -1,6 +1,6 @@
-package com.manosprojects.themoviedb.features.home.domain.usecase
+package com.manosprojects.themoviedb.domain.usecase
 
-import com.manosprojects.themoviedb.features.home.domain.repository.MoviesRepository
+import com.manosprojects.themoviedb.domain.repository.MoviesRepository
 import javax.inject.Inject
 
 interface MarkMovieAsFavouriteUC {

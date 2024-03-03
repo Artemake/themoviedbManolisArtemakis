@@ -1,8 +1,8 @@
-package com.manosprojects.themoviedb.features.home.domain.repository
+package com.manosprojects.themoviedb.domain.repository
 
-import com.manosprojects.themoviedb.features.home.domain.data.DMovie
-import com.manosprojects.themoviedb.features.home.domain.source.local.MoviesLocalSource
-import com.manosprojects.themoviedb.features.home.domain.source.remote.MoviesRemoteSource
+import com.manosprojects.themoviedb.domain.data.DMovie
+import com.manosprojects.themoviedb.domain.source.local.MoviesLocalSource
+import com.manosprojects.themoviedb.domain.source.remote.MoviesRemoteSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

@@ -1,4 +1,4 @@
-package com.manosprojects.themoviedb.features.home.ui.views
+package com.manosprojects.themoviedb.features.home.views
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image

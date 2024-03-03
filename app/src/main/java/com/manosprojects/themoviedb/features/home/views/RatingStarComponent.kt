@@ -1,4 +1,4 @@
-package com.manosprojects.themoviedb.features.home.ui.views
+package com.manosprojects.themoviedb.features.home.views
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Icon
