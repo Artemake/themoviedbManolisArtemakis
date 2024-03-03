@@ -20,7 +20,7 @@ import com.manosprojects.themoviedb.features.home.viewmodels.HomeViewModel
 
 @Composable
 fun HomeScreen(
-    navigateToMovie: (Int) -> Unit,
+    navigateToMovie: (Long) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current

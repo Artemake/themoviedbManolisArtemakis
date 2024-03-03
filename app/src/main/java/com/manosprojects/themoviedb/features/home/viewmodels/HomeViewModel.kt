@@ -71,7 +71,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun onMoviePressed(movieId: Int) {
+    private fun onMoviePressed(movieId: Long) {
         setEffect {
             HomeContract.Effect.NavigateToMovie(movieId = movieId)
         }

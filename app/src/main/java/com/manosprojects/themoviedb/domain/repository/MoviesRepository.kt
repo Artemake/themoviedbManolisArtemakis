@@ -13,7 +13,7 @@ import javax.inject.Inject
 interface MoviesRepository {
     fun getInitialMovies(): Flow<List<DMovie>?>
     fun loadMovies(): Flow<List<DMovie>?>
-    fun markMovieAsFavourite(movieId: Int, isFavourite: Boolean)
+    fun markMovieAsFavourite(movieId: Long, isFavourite: Boolean)
 }
 
 class MoviesRepositoryImpl @Inject constructor(
@@ -43,7 +43,7 @@ class MoviesRepositoryImpl @Inject constructor(
         return moviesRemoteSource.loadMovies()
     }
 
-    override fun markMovieAsFavourite(movieId: Int, isFavourite: Boolean) {
+    override fun markMovieAsFavourite(movieId: Long, isFavourite: Boolean) {
         moviesLocalSource.setFavourite(movieId = movieId, isFavourite = isFavourite)
     }
 

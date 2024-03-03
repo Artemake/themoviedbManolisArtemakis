@@ -3,7 +3,7 @@ package com.manosprojects.themoviedb.features.home.data
 import android.graphics.Bitmap
 
 data class HomeMovieModel(
-    val movieId: Int,
+    val movieId: Long,
     val title: String,
     val releaseDate: String,
     val rating: Float,

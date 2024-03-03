@@ -3,6 +3,7 @@ package com.manosprojects.themoviedb.domain.source.remote
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.manosprojects.themoviedb.domain.data.DMovie
+import com.manosprojects.themoviedb.domain.data.DMovieDetails
 import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
 import com.manosprojects.themoviedb.domain.source.remote.data.RMovie
 import com.manosprojects.themoviedb.utils.formatRMovieDateToLocalDate
@@ -12,6 +13,7 @@ import javax.inject.Inject
 
 interface MoviesRemoteSource {
     fun loadMovies(): Flow<List<DMovie>?>
+    suspend fun loadMovieDetails(movieId: String): DMovieDetails?
 }
 
 class MoviesRemoteSourceImpl @Inject constructor(
@@ -37,6 +39,11 @@ class MoviesRemoteSourceImpl @Inject constructor(
                 emit(null)
             }
         }
+    }
+
+    override suspend fun loadMovieDetails(movieId: String): DMovieDetails? {
+
+        return null
     }
 
     private suspend fun downloadImage(imagePath: String): Bitmap? {

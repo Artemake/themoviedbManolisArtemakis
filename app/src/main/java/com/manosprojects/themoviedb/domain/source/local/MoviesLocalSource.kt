@@ -10,8 +10,8 @@ import javax.inject.Inject
 
 interface MoviesLocalSource {
     fun getMovies(): Flow<List<DMovie>>
-    fun isMovieFavourite(movieId: Int): Boolean
-    fun setFavourite(movieId: Int, isFavourite: Boolean)
+    fun isMovieFavourite(movieId: Long): Boolean
+    fun setFavourite(movieId: Long, isFavourite: Boolean)
 }
 
 class MoviesLocalSourceImpL @Inject constructor(
@@ -21,12 +21,12 @@ class MoviesLocalSourceImpL @Inject constructor(
         return flowOf(emptyList())
     }
 
-    override fun isMovieFavourite(movieId: Int): Boolean {
+    override fun isMovieFavourite(movieId: Long): Boolean {
         val key = SharedPrefKeys.FAVORITE_PREFIX + movieId
         return sharedPreferences.getBoolean(key, false)
     }
 
-    override fun setFavourite(movieId: Int, isFavourite: Boolean) {
+    override fun setFavourite(movieId: Long, isFavourite: Boolean) {
         val key = SharedPrefKeys.FAVORITE_PREFIX + movieId
         sharedPreferences.edit {
             putBoolean(key, isFavourite)
