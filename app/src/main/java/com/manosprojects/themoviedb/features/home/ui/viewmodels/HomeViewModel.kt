@@ -8,6 +8,7 @@ import com.manosprojects.themoviedb.features.home.ui.contract.HomeContract
 import com.manosprojects.themoviedb.features.home.ui.data.HomeMovieModel
 import com.manosprojects.themoviedb.mvibase.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,14 +23,20 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getMoviesUC.execute().collect {
-                it?.let {
-                    setState {
-                        copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
+            val deferred = async {
+                getMoviesUC.execute().collect {
+                    it?.let {
+                        setState {
+                            copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
+                        }
+                    } ?: setEffect {
+                        HomeContract.Effect.ShowSnack(message = errorMessage)
                     }
-                } ?: setEffect {
-                    HomeContract.Effect.ShowSnack(message = errorMessage)
                 }
+            }
+            deferred.await()
+            setState {
+                copy(showLoading = false)
             }
         }
     }
@@ -58,22 +65,35 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun onScrolledToEnd() {
+        if (uiState.value.showLoading) {
+            return
+        }
         setState {
             copy(showLoading = true)
         }
         viewModelScope.launch {
-            loadMoviesUC.execute().collect { newMovies ->
-                newMovies?.let {
-                    setState {
-                        val newMoviesList = buildList {
-                            addAll(movies)
-                            addAll(newMovies.map { dMovie -> dMovie.mapToUIModel() })
+            val deferred = async {
+                loadMoviesUC.execute().collect { newMovies ->
+                    newMovies?.let {
+                        setState {
+                            val newMoviesList = buildList {
+                                addAll(movies)
+                                newMovies.forEach { dMovie ->
+                                    if (!movies.any { it.movieId == dMovie.movieId }) {
+                                        add(dMovie.mapToUIModel())
+                                    }
+                                }
+                            }
+                            copy(movies = newMoviesList)
                         }
-                        copy(showLoading = false, movies = newMoviesList)
+                    } ?: setEffect {
+                        HomeContract.Effect.ShowSnack(message = errorMessage)
                     }
-                } ?: setEffect {
-                    HomeContract.Effect.ShowSnack(message = errorMessage)
                 }
+            }
+            deferred.await()
+            setState {
+                copy(showLoading = false)
             }
         }
     }

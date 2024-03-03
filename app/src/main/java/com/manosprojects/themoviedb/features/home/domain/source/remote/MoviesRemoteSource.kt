@@ -31,6 +31,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
                     list.add(it.mapToDomain(bitmap))
                     emit(list)
                 }
+                pageCount++
             } catch (e: Exception) {
                 emit(null)
             }

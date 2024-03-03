@@ -3,7 +3,6 @@ package com.manosprojects.themoviedb.features.home.ui.views
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,19 +29,23 @@ fun HomeScreen(
     val state = homeViewModel.uiState.collectAsState().value
 
     LazyColumn {
-        items(state.movies) {
+        items(state.movies.size) {
+            if (it == state.movies.size - 1) {
+                homeViewModel.setEvent(HomeContract.Event.OnScrolledToEnd)
+            }
+            val item = state.movies[it]
             MovieComponent(
-                title = it.title,
-                releaseDate = it.releaseDate,
-                rating = it.rating.toString(),
-                image = it.image,
+                title = item.title,
+                releaseDate = item.releaseDate,
+                rating = item.rating.toString(),
+                image = item.image,
                 onFavouritePressed = {
                     homeViewModel.setEvent(
-                        HomeContract.Event.OnFavoritePressed(it)
+                        HomeContract.Event.OnFavoritePressed(item)
                     )
                 }, onMoviePressed = {
                     homeViewModel.setEvent(
-                        HomeContract.Event.OnMoviePressed(it)
+                        HomeContract.Event.OnMoviePressed(item)
                     )
                 })
         }
