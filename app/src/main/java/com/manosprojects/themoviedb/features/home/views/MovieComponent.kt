@@ -2,7 +2,6 @@ package com.manosprojects.themoviedb.features.home.views
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,8 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -61,48 +58,37 @@ fun MovieComponent(
                 contentScale = ContentScale.Fit
             )
         }
-        Box(
+        Column(
             modifier = Modifier
-                .align(Alignment.BottomStart)
-                .background(
-                    brush = Brush.verticalGradient(
-                        listOf(
-                            Color.Black.copy(alpha = 0.3f),
-                            Color.Black
-                        )
-                    )
-                )
+                .padding(16.dp)
+                .align(Alignment.BottomStart),
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.SpaceEvenly
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.inverseOnSurface,
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.inverseOnSurface,
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+                RatingStarComponent(
+                    rating = rating.toDouble()
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RatingStarComponent(
-                        rating = rating.toDouble()
-                    )
 
-                    Text(
-                        text = releaseDate,
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                Text(
+                    text = releaseDate,
+                    color = MaterialTheme.colorScheme.inverseOnSurface,
+                    style = MaterialTheme.typography.bodySmall
+                )
 
-                    IconButton(onClick = onFavouritePressed) {
-                        Image(
-                            painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_24_unselected),
-                            contentDescription = null
-                        )
-                    }
+                IconButton(onClick = onFavouritePressed) {
+                    Image(
+                        painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_24_unselected),
+                        contentDescription = null
+                    )
                 }
             }
         }
