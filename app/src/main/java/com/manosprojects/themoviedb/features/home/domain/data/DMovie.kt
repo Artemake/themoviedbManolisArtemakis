@@ -8,4 +8,5 @@ data class DMovie(
     val releaseDate: String,
     val rating: Float,
     val image: Bitmap?,
+    val isFavourite: Boolean = false,
 )

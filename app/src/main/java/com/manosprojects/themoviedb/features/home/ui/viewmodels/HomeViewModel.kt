@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.manosprojects.themoviedb.features.home.domain.data.DMovie
 import com.manosprojects.themoviedb.features.home.domain.usecase.GetMoviesUC
 import com.manosprojects.themoviedb.features.home.domain.usecase.LoadMoviesUC
+import com.manosprojects.themoviedb.features.home.domain.usecase.MarkMovieAsFavouriteUC
 import com.manosprojects.themoviedb.features.home.ui.contract.HomeContract
 import com.manosprojects.themoviedb.features.home.ui.data.HomeMovieModel
 import com.manosprojects.themoviedb.mvibase.BaseViewModel
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getMoviesUC: GetMoviesUC,
     private val loadMoviesUC: LoadMoviesUC,
+    private val markMovieAsFavouriteUC: MarkMovieAsFavouriteUC
 ) :
     BaseViewModel<HomeContract.Event, HomeContract.State, HomeContract.Effect>() {
 
@@ -48,14 +50,24 @@ class HomeViewModel @Inject constructor(
 
     override fun handleEvent(event: HomeContract.Event) {
         when (event) {
-            is HomeContract.Event.OnFavoritePressed -> onFavoritePressed(event.movie.movieId)
+            is HomeContract.Event.OnFavoritePressed -> onFavoritePressed(event.movie)
             is HomeContract.Event.OnMoviePressed -> onMoviePressed(event.movie.movieId)
             is HomeContract.Event.OnScrolledToEnd -> onScrolledToEnd()
         }
     }
 
-    private fun onFavoritePressed(movieId: Int) {
-
+    private fun onFavoritePressed(movie: HomeMovieModel) {
+        markMovieAsFavouriteUC.execute(movieId = movie.movieId, isFavourite = !movie.isFavorite)
+        setState {
+            val newMovies = movies.map {
+                if (it.movieId != movie.movieId) {
+                    it
+                } else {
+                    it.copy(isFavorite = !it.isFavorite)
+                }
+            }
+            copy(movies = newMovies)
+        }
     }
 
     private fun onMoviePressed(movieId: Int) {
@@ -104,7 +116,8 @@ class HomeViewModel @Inject constructor(
             movieId = movieId,
             releaseDate = releaseDate,
             rating = rating,
-            image = image
+            image = image,
+            isFavorite = isFavourite,
         )
     }
 }

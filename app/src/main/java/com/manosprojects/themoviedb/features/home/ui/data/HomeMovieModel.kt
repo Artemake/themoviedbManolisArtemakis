@@ -7,5 +7,6 @@ data class HomeMovieModel(
     val title: String,
     val releaseDate: String,
     val rating: Float,
+    val isFavorite: Boolean,
     val image: Bitmap?,
 )

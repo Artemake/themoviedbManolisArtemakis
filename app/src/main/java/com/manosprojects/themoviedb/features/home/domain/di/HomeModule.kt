@@ -11,6 +11,8 @@ import com.manosprojects.themoviedb.features.home.domain.usecase.GetMoviesUC
 import com.manosprojects.themoviedb.features.home.domain.usecase.GetMoviesUCImp
 import com.manosprojects.themoviedb.features.home.domain.usecase.LoadMoviesUC
 import com.manosprojects.themoviedb.features.home.domain.usecase.LoadMoviesUCImpl
+import com.manosprojects.themoviedb.features.home.domain.usecase.MarkMovieAsFavouriteUC
+import com.manosprojects.themoviedb.features.home.domain.usecase.MarkMovieAsFavouriteUCImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -28,6 +30,9 @@ interface HomeModule {
 
     @Binds
     fun bindLoadMoviesUC(loadMoviesUCImpl: LoadMoviesUCImpl): LoadMoviesUC
+
+    @Binds
+    fun bindMarkMovieAsFavouriteUC(markMovieAsFavouriteUCImpl: MarkMovieAsFavouriteUCImpl): MarkMovieAsFavouriteUC
 
     @Binds
     fun bindMoviesRepository(moviesRepositoryImpl: MoviesRepositoryImpl): MoviesRepository

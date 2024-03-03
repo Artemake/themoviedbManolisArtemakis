@@ -46,6 +46,7 @@ fun HomeScreen(
                 releaseDate = item.releaseDate,
                 rating = item.rating.toString(),
                 image = item.image,
+                isFavourite = item.isFavorite,
                 onFavouritePressed = {
                     homeViewModel.setEvent(
                         HomeContract.Event.OnFavoritePressed(item)
