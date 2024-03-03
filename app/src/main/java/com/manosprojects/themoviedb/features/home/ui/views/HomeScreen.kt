@@ -2,10 +2,17 @@ package com.manosprojects.themoviedb.features.home.ui.views
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.manosprojects.themoviedb.features.home.ui.contract.HomeContract
@@ -49,6 +56,7 @@ fun HomeScreen(
                     )
                 })
         }
+
         item {
             if (state.showLoading) {
                 LoadingAnimation()
@@ -60,7 +68,17 @@ fun HomeScreen(
 
 @Composable
 private fun LoadingAnimation() {
-
+    Box(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center),
+            color = MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+    }
 }
 
 private fun showToast(context: Context, message: String) {
