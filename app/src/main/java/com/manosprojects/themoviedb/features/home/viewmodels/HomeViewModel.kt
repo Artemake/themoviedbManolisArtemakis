@@ -2,6 +2,7 @@ package com.manosprojects.themoviedb.features.home.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.manosprojects.themoviedb.domain.data.DMovie
+import com.manosprojects.themoviedb.domain.data.DomainState
 import com.manosprojects.themoviedb.domain.usecase.GetMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.LoadMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.MarkMovieAsFavouriteUC
@@ -26,20 +27,20 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val deferred = async {
-                getMoviesUC.execute().collect {
-                    it?.let {
-                        setState {
-                            copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
-                        }
-                    } ?: setEffect {
-                        HomeContract.Effect.ShowSnack(message = errorMessage)
+            getMoviesUC.execute().collect {
+                it.first?.let {
+                    setState {
+                        copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
+                    }
+                } ?: setEffect {
+                    HomeContract.Effect.ShowSnack(message = errorMessage)
+                }
+
+                if (it.second == DomainState.DOWNLOAD_COMPLETE) {
+                    setState {
+                        copy(showLoading = false)
                     }
                 }
-            }
-            deferred.await()
-            setState {
-                copy(showLoading = false)
             }
         }
     }

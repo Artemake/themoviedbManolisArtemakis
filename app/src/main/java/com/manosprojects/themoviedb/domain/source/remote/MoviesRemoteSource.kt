@@ -7,8 +7,8 @@ import com.manosprojects.themoviedb.domain.data.DMovieDetails
 import com.manosprojects.themoviedb.domain.data.DReview
 import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
 import com.manosprojects.themoviedb.domain.source.remote.data.RMovie
-import com.manosprojects.themoviedb.utils.formatRDateToLocalDate
 import com.manosprojects.themoviedb.utils.formatRDurationToDuration
+import com.manosprojects.themoviedb.utils.formatStringDateToLocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -58,7 +58,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
                         DMovieDetails(
                             movieId = movieDetailsResponse.id,
                             title = movieDetailsResponse.title,
-                            releaseDate = formatRDateToLocalDate(movieDetailsResponse.release_date),
+                            releaseDate = formatStringDateToLocalDate(movieDetailsResponse.release_date),
                             rating = movieDetailsResponse.vote_average,
                             image = image,
                             genres = movieDetailsResponse.genres.map { it.name },
@@ -95,7 +95,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
         return DMovie(
             movieId = id,
             title = title,
-            releaseDate = formatRDateToLocalDate(release_date),
+            releaseDate = formatStringDateToLocalDate(release_date),
             rating = vote_average,
             image = bitmap,
         )

@@ -8,7 +8,13 @@ fun formatDomainDateToUIDate(date: LocalDate): String {
     return formatter.format(date)
 }
 
-fun formatRDateToLocalDate(date: String): LocalDate {
+fun formatStringDateToLocalDate(date: String): LocalDate {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     return LocalDate.parse(date, formatter)
 }
+
+fun formatLocalDateToLDate(date: LocalDate): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    return formatter.format(date)
+}
+
