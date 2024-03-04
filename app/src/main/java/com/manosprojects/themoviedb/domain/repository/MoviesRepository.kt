@@ -6,10 +6,7 @@ import com.manosprojects.themoviedb.domain.data.DomainState
 import com.manosprojects.themoviedb.domain.source.local.MoviesLocalSource
 import com.manosprojects.themoviedb.domain.source.remote.MoviesRemoteSource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.withContext
@@ -27,30 +24,32 @@ class MoviesRepositoryImpl @Inject constructor(
     private val moviesRemoteSource: MoviesRemoteSource,
 ) : MoviesRepository {
 
-    val a = DomainState.DOWNLOADING
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getInitialMovies(): Flow<Pair<List<DMovie>?, DomainState>> {
-        return moviesLocalSource.getMovies().flatMapLatest {
-            if (it.isNotEmpty()) {
-                flowOf(it to DomainState.DOWNLOAD_COMPLETE)
-            } else {
-                var dMovies: List<DMovie>? = null
-                moviesRemoteSource.loadMovies().map { dMoviesList ->
-                    dMoviesList?.map { dMovie ->
-                        dMovie.copy(
-                            isFavourite = moviesLocalSource.isMovieFavourite(
-                                dMovie.movieId
-                            )
+        var dMovies: List<DMovie>? = null
+        return if (moviesLocalSource.areMoviesStored()) {
+            moviesRemoteSource.incrementPage()
+            moviesLocalSource.getMovies().map {
+                dMovies = it
+                it to DomainState.LOADING
+            }.onCompletion {
+                val list = dMovies ?: emptyList()
+                emit(list to DomainState.LOAD_COMPLETE)
+            }
+        } else {
+            moviesRemoteSource.loadMovies().map { dMoviesList ->
+                dMoviesList?.map { dMovie ->
+                    dMovie.copy(
+                        isFavourite = moviesLocalSource.isMovieFavourite(
+                            dMovie.movieId
                         )
-                    }.also { dMovies = dMoviesList } to DomainState.DOWNLOADING
-                }.onCompletion {
-                    emit(dMovies to DomainState.DOWNLOAD_COMPLETE)
-                    withContext(Dispatchers.IO) {
-                        dMovies?.let { list ->
-                            if (list.isNotEmpty()) {
-                                moviesLocalSource.storeMovies(list)
-                            }
+                    )
+                }.also { dMovies = dMoviesList } to DomainState.LOADING
+            }.onCompletion {
+                emit(dMovies to DomainState.LOAD_COMPLETE)
+                withContext(Dispatchers.IO) {
+                    dMovies?.let { list ->
+                        if (list.isNotEmpty()) {
+                            moviesLocalSource.storeMovies(list)
                         }
                     }
                 }

@@ -16,6 +16,7 @@ import javax.inject.Inject
 interface MoviesRemoteSource {
     fun loadMovies(): Flow<List<DMovie>?>
     fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?>
+    fun incrementPage()
 }
 
 class MoviesRemoteSourceImpl @Inject constructor(
@@ -78,6 +79,10 @@ class MoviesRemoteSourceImpl @Inject constructor(
                 emit(null)
             }
         }
+    }
+
+    override fun incrementPage() {
+        pageCount++
     }
 
     private suspend fun downloadImage(imagePath: String): Bitmap? {

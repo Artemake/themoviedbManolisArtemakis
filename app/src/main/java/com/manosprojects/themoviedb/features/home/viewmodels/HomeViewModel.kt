@@ -36,7 +36,7 @@ class HomeViewModel @Inject constructor(
                     HomeContract.Effect.ShowSnack(message = errorMessage)
                 }
 
-                if (it.second == DomainState.DOWNLOAD_COMPLETE) {
+                if (it.second == DomainState.LOAD_COMPLETE) {
                     setState {
                         copy(showLoading = false)
                     }
