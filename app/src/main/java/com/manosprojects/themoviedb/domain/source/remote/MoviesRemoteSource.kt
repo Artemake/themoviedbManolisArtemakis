@@ -6,7 +6,9 @@ import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.data.DMovieDetails
 import com.manosprojects.themoviedb.domain.data.DReview
 import com.manosprojects.themoviedb.domain.source.remote.api.MoviesAPI
-import com.manosprojects.themoviedb.domain.source.remote.data.RMovie
+import com.manosprojects.themoviedb.domain.source.remote.data.MovieDetailsResponse
+import com.manosprojects.themoviedb.domain.source.remote.data.ReviewsResponse
+import com.manosprojects.themoviedb.domain.source.remote.mappers.mapToDomain
 import com.manosprojects.themoviedb.utils.formatRDurationToDuration
 import com.manosprojects.themoviedb.utils.formatStringDateToLocalDate
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +27,8 @@ class MoviesRemoteSourceImpl @Inject constructor(
 
     private var pageCount = 1
 
-    // TODO: to remove and adjust this to place it in the NetworkDI
+    // ideally we would fetch the info for this regarding the size of the image from the dedicated
+    // endpoint
     private val baseUrl = "https://image.tmdb.org/t/p/original"
 
     override fun loadMovies(): Flow<List<DMovie>?> {
@@ -52,26 +55,15 @@ class MoviesRemoteSourceImpl @Inject constructor(
                 val similarMoviesResponse = moviesAPI.getSimilarMovies(movieId = movieId)
                 val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
                 val dMovies = mutableListOf<DMovie>()
-                similarMoviesResponse.results.map { rMovie ->
+                similarMoviesResponse.results.forEach { rMovie ->
                     val bitmap = downloadImage(rMovie.poster_path)
                     dMovies.add(rMovie.mapToDomain(bitmap))
                     emit(
-                        DMovieDetails(
-                            movieId = movieDetailsResponse.id,
-                            title = movieDetailsResponse.title,
-                            releaseDate = formatStringDateToLocalDate(movieDetailsResponse.release_date),
-                            rating = movieDetailsResponse.vote_average,
+                        getMovieDetails(
+                            movieDetailsResponse = movieDetailsResponse,
+                            reviewsResponse = reviewsResponse,
+                            dMovies = dMovies,
                             image = image,
-                            genres = movieDetailsResponse.genres.map { it.name },
-                            runtime = formatRDurationToDuration(movieDetailsResponse.runtime),
-                            description = movieDetailsResponse.overview,
-                            reviews = reviewsResponse.results.map {
-                                DReview(
-                                    author = it.author,
-                                    content = it.content
-                                )
-                            },
-                            similarMovies = dMovies,
                         )
                     )
                 }
@@ -96,13 +88,29 @@ class MoviesRemoteSourceImpl @Inject constructor(
         }
     }
 
-    private fun RMovie.mapToDomain(bitmap: Bitmap?): DMovie {
-        return DMovie(
-            movieId = id,
-            title = title,
-            releaseDate = formatStringDateToLocalDate(release_date),
-            rating = vote_average,
-            image = bitmap,
+    private fun getMovieDetails(
+        movieDetailsResponse: MovieDetailsResponse,
+        reviewsResponse: ReviewsResponse,
+        dMovies: List<DMovie>,
+        image: Bitmap?
+    ): DMovieDetails {
+        return DMovieDetails(
+            movieId = movieDetailsResponse.id,
+            title = movieDetailsResponse.title,
+            releaseDate = formatStringDateToLocalDate(movieDetailsResponse.release_date),
+            rating = movieDetailsResponse.vote_average,
+            image = image,
+            genres = movieDetailsResponse.genres.map { it.name },
+            runtime = formatRDurationToDuration(movieDetailsResponse.runtime),
+            description = movieDetailsResponse.overview,
+            reviews = reviewsResponse.results.map {
+                DReview(
+                    author = it.author,
+                    content = it.content
+                )
+            },
+            similarMovies = dMovies,
         )
     }
+
 }

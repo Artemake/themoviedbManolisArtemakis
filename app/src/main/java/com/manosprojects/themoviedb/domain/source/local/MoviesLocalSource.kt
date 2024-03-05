@@ -2,28 +2,22 @@ package com.manosprojects.themoviedb.domain.source.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.source.local.data.LMovie
+import com.manosprojects.themoviedb.domain.source.local.mappers.mapToCache
+import com.manosprojects.themoviedb.domain.source.local.mappers.mapToDomain
 import com.manosprojects.themoviedb.sharedpref.SharedPrefKeys
-import com.manosprojects.themoviedb.utils.formatLocalDateToLDate
-import com.manosprojects.themoviedb.utils.formatStringDateToLocalDate
+import com.manosprojects.themoviedb.utils.loadData
+import com.manosprojects.themoviedb.utils.loadImage
+import com.manosprojects.themoviedb.utils.storeDataToFile
+import com.manosprojects.themoviedb.utils.storeImage
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.FileReader
-import java.io.FileWriter
-import java.io.IOException
 import javax.inject.Inject
 
 interface MoviesLocalSource {
@@ -54,9 +48,8 @@ class MoviesLocalSourceImpL @Inject constructor(
             flow {
                 val dMovies = mutableListOf<DMovie>()
                 movieIds.forEach {
-                    val lMovie = loadLMovie(it + dataPostfix)
-                    val image = loadImage(it + imagePostfix)
-                    lMovie?.mapToDomain(image)?.let { dMovie ->
+                    val dMovie = loadMovieAndMapToDomain(it)
+                    dMovie?.let {
                         dMovies.add(dMovie)
                         emit(dMovies)
                     }
@@ -78,16 +71,27 @@ class MoviesLocalSourceImpL @Inject constructor(
     }
 
     override fun storeMovies(movies: List<DMovie>) {
+        if (movies.isEmpty()) return
         val movieIds = mutableListOf<String>()
-        movies.forEach { dmovie ->
-            val dataFile = dmovie.movieId.toString() + dataPostfix
-            val imageFile = dmovie.movieId.toString() + imagePostfix
-            val image = dmovie.image
-            image?.let { storeImage(imageFile = imageFile, image = image) }
-            storeLMovieToFile(dataFile = dataFile, lMovie = dmovie.mapToLocal())
-            movieIds.add(dmovie.movieId.toString())
+        movies.forEach { dMovie ->
+            storeDMovie(dMovie)
+            movieIds.add(dMovie.movieId.toString())
         }
         storeMovieIds(movieIds = movieIds)
+    }
+
+    private fun storeDMovie(movie: DMovie) {
+        val dataFile = movie.movieId.toString() + dataPostfix
+        val imageFile = movie.movieId.toString() + imagePostfix
+        val image = movie.image
+        image?.let { storeImage(imageFile = imageFile, image = image, context = context) }
+        storeDataToFile(dataFile = dataFile, data = movie.mapToCache(), context = context)
+    }
+
+    private suspend fun loadMovieAndMapToDomain(movieId: String): DMovie? {
+        val lMovie = loadData<LMovie>(dataFile = movieId + dataPostfix, context = context)
+        val image = loadImage(imageName = movieId + imagePostfix, context = context)
+        return lMovie?.mapToDomain(image)
     }
 
     private fun storeMovieIds(movieIds: List<String>) {
@@ -104,84 +108,4 @@ class MoviesLocalSourceImpL @Inject constructor(
         val type = object : TypeToken<List<String>>() {}.type
         return gson.fromJson(json, type) ?: emptyList()
     }
-
-    private fun storeLMovieToFile(dataFile: String, lMovie: LMovie) {
-        val gson = Gson()
-        val jsonString = gson.toJson(lMovie)
-
-        val file = File(context.filesDir, dataFile)
-        try {
-            val writer = FileWriter(file)
-            writer.use {
-                it.write(jsonString)
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    fun loadLMovie(dataFile: String): LMovie? {
-        val gson = Gson()
-        val file = File(context.filesDir, dataFile)
-        if (!file.exists()) {
-            return null
-        }
-        return try {
-            val reader = FileReader(file)
-            val type = object : TypeToken<LMovie>() {}.type
-            gson.fromJson(reader, type)
-        } catch (e: IOException) {
-            null
-        }
-    }
-
-    suspend fun loadImage(imageName: String): Bitmap? {
-        return withContext(Dispatchers.IO) {
-            try {
-                val file = File(context.filesDir, imageName)
-                if (file.exists()) {
-                    val inputStream = FileInputStream(file)
-                    BitmapFactory.decodeStream(inputStream)
-                } else {
-                    null
-                }
-            } catch (e: IOException) {
-                null
-            }
-        }
-    }
-
-    private fun storeImage(imageFile: String, image: Bitmap) {
-        val file = File(context.filesDir, imageFile)
-        try {
-            val fos = FileOutputStream(file)
-            image.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            fos.flush()
-            fos.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun DMovie.mapToLocal(): LMovie {
-        return LMovie(
-            movieId = movieId,
-            title = title,
-            releaseDate = formatLocalDateToLDate(releaseDate),
-            rating = rating,
-            isFavourite = isFavourite,
-        )
-    }
-
-    private fun LMovie.mapToDomain(image: Bitmap?): DMovie {
-        return DMovie(
-            movieId = movieId,
-            title = title,
-            releaseDate = formatStringDateToLocalDate(releaseDate),
-            rating = rating,
-            image = image,
-            isFavourite = isFavourite,
-        )
-    }
-
 }

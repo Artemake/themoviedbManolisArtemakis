@@ -25,35 +25,10 @@ class MoviesRepositoryImpl @Inject constructor(
 ) : MoviesRepository {
 
     override suspend fun getInitialMovies(): Flow<Pair<List<DMovie>?, DomainState>> {
-        var dMovies: List<DMovie>? = null
         return if (moviesLocalSource.areMoviesStored()) {
-            moviesRemoteSource.incrementPage()
-            moviesLocalSource.getMovies().map {
-                dMovies = it
-                it to DomainState.LOADING
-            }.onCompletion {
-                val list = dMovies ?: emptyList()
-                emit(list to DomainState.LOAD_COMPLETE)
-            }
+            loadInitialMoviesFromLocal()
         } else {
-            moviesRemoteSource.loadMovies().map { dMoviesList ->
-                dMoviesList?.map { dMovie ->
-                    dMovie.copy(
-                        isFavourite = moviesLocalSource.isMovieFavourite(
-                            dMovie.movieId
-                        )
-                    )
-                }.also { dMovies = dMoviesList } to DomainState.LOADING
-            }.onCompletion {
-                emit(dMovies to DomainState.LOAD_COMPLETE)
-                withContext(Dispatchers.IO) {
-                    dMovies?.let { list ->
-                        if (list.isNotEmpty()) {
-                            moviesLocalSource.storeMovies(list)
-                        }
-                    }
-                }
-            }
+            loadInitialMoviesFromRemote()
         }
     }
 
@@ -81,6 +56,36 @@ class MoviesRepositoryImpl @Inject constructor(
 
     override fun markMovieAsFavourite(movieId: Long, isFavourite: Boolean) {
         moviesLocalSource.setFavourite(movieId = movieId, isFavourite = isFavourite)
+    }
+
+    private fun loadInitialMoviesFromLocal(): Flow<Pair<List<DMovie>, DomainState>> {
+        var dMovies: List<DMovie> = emptyList()
+        moviesRemoteSource.incrementPage()
+        return moviesLocalSource.getMovies().map {
+            dMovies = it
+            it to DomainState.LOADING
+        }.onCompletion {
+            val list = dMovies
+            emit(list to DomainState.LOAD_COMPLETE)
+        }
+    }
+
+    private fun loadInitialMoviesFromRemote(): Flow<Pair<List<DMovie>?, DomainState>> {
+        var dMovies: List<DMovie>? = null
+        return moviesRemoteSource.loadMovies().map { dMoviesList ->
+            dMoviesList?.map { dMovie ->
+                dMovie.copy(
+                    isFavourite = moviesLocalSource.isMovieFavourite(
+                        dMovie.movieId
+                    )
+                )
+            }.also { dMovies = dMoviesList } to DomainState.LOADING
+        }.onCompletion {
+            emit(dMovies to DomainState.LOAD_COMPLETE)
+            withContext(Dispatchers.IO) {
+                dMovies?.let { moviesLocalSource.storeMovies(it) }
+            }
+        }
     }
 
 }
