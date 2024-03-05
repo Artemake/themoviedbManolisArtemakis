@@ -41,7 +41,6 @@ import com.manosprojects.themoviedb.features.moviedetails.viewmodels.MovieDetail
 @Composable
 fun MovieDetailsScreen(
     movieId: Long,
-    onBackButtonPressed: () -> Unit,
 ) {
     val viewModel =
         hiltViewModel<MovieDetailsViewModel, MovieDetailsViewModel.MovieDetailsViewModelFactory> { factory ->

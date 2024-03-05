@@ -76,7 +76,6 @@ fun MovieDBNavHost(
                 movieId?.let {
                     MovieDetailsScreen(
                         movieId = movieId,
-                        onBackButtonPressed = navController::popBackStack
                     )
                 }
             }
