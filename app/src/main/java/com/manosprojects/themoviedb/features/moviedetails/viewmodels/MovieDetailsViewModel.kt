@@ -53,7 +53,7 @@ class MovieDetailsViewModel @AssistedInject constructor(
             title = title,
             releaseDate = formatDomainDateToUIDate(releaseDate),
             rating = rating,
-            image = image,
+            imageUrl = imageUrl,
             isFavourite = isFavourite,
             genres = genres,
             runtime = formatDurationToUITime(runtime),
@@ -64,7 +64,7 @@ class MovieDetailsViewModel @AssistedInject constructor(
                     content = it.content
                 )
             }.take(3),
-            similarMovies = similarMovies.map { it.image }.filterNotNull().take(6),
+            similarMovies = similarMovies.map { it.imageUrl }.take(6),
         )
     }
 }

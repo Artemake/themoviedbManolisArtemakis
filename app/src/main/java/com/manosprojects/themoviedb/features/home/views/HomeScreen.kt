@@ -75,7 +75,7 @@ private fun MovieComponent(
         title = homeMovieModel.title,
         releaseDate = homeMovieModel.releaseDate,
         rating = homeMovieModel.rating,
-        image = homeMovieModel.image,
+        imageUrl = homeMovieModel.imageUrl,
         isFavourite = homeMovieModel.isFavorite,
         onFavouritePressed = {
             onFavouritePressed(homeMovieModel)

@@ -1,19 +1,17 @@
 package com.manosprojects.themoviedb.features.moviedetails.data
 
-import android.graphics.Bitmap
-
 data class MovieDetailsModel(
     val movieId: Long,
     val title: String,
     val releaseDate: String,
     val rating: Float,
-    val image: Bitmap?,
+    val imageUrl: String,
     val isFavourite: Boolean = false,
     val genres: List<String>,
     val runtime: String,
     val description: String,
     val reviews: List<MovieDetailsReviewModel>,
-    val similarMovies: List<Bitmap>
+    val similarMovies: List<String>
 )
 
 data class MovieDetailsReviewModel(

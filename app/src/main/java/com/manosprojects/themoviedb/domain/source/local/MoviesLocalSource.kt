@@ -13,7 +13,6 @@ import com.manosprojects.themoviedb.sharedpref.SharedPrefKeys
 import com.manosprojects.themoviedb.utils.loadData
 import com.manosprojects.themoviedb.utils.loadImage
 import com.manosprojects.themoviedb.utils.storeDataToFile
-import com.manosprojects.themoviedb.utils.storeImage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -37,6 +36,7 @@ class MoviesLocalSourceImpL @Inject constructor(
     private val imagePostfix = "-image.png"
 
     override fun areMoviesStored(): Boolean {
+        return false
         return loadMovieIds().isNotEmpty()
     }
 
@@ -83,15 +83,15 @@ class MoviesLocalSourceImpL @Inject constructor(
     private fun storeDMovie(movie: DMovie) {
         val dataFile = movie.movieId.toString() + dataPostfix
         val imageFile = movie.movieId.toString() + imagePostfix
-        val image = movie.image
-        image?.let { storeImage(imageFile = imageFile, image = image, context = context) }
+        val image = movie.imageUrl
+        // image?.let { storeImage(imageFile = imageFile, image = image, context = context) }
         storeDataToFile(dataFile = dataFile, data = movie.mapToCache(), context = context)
     }
 
     private suspend fun loadMovieAndMapToDomain(movieId: String): DMovie? {
         val lMovie = loadData<LMovie>(dataFile = movieId + dataPostfix, context = context)
         val image = loadImage(imageName = movieId + imagePostfix, context = context)
-        return lMovie?.mapToDomain(image)
+        return lMovie?.mapToDomain("image")
     }
 
     private fun storeMovieIds(movieIds: List<String>) {

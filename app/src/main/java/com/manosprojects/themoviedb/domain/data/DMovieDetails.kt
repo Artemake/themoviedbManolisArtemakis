@@ -1,6 +1,5 @@
 package com.manosprojects.themoviedb.domain.data
 
-import android.graphics.Bitmap
 import java.time.LocalDate
 import kotlin.time.Duration
 
@@ -9,7 +8,7 @@ data class DMovieDetails(
     val title: String,
     val releaseDate: LocalDate,
     val rating: Float,
-    val image: Bitmap?,
+    val imageUrl: String,
     val isFavourite: Boolean = false,
     val genres: List<String>,
     val runtime: Duration,

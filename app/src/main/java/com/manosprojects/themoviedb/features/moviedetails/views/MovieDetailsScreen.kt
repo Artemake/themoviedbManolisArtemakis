@@ -1,6 +1,5 @@
 package com.manosprojects.themoviedb.features.moviedetails.views
 
-import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
@@ -25,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.manosprojects.themoviedb.R
 import com.manosprojects.themoviedb.features.home.views.RatingStarComponent
 import com.manosprojects.themoviedb.features.moviedetails.contract.MovieDetailsContract
@@ -75,15 +74,20 @@ private fun MovieDetailsScreen(movieDetailsModel: MovieDetailsModel) {
             .verticalScroll(scrollState)
             .fillMaxSize()
     ) {
-        movieDetailsModel.image?.let {
-            Box {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit
-                )
-            }
-        }
+        AsyncImage(
+            model = movieDetailsModel.imageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Fit
+        )
+//        movieDetailsModel.imageUrl?.let {
+//            Box {
+//                Image(
+//                    bitmap = it.asImageBitmap(),
+//                    contentDescription = null,
+//                    contentScale = ContentScale.Fit
+//                )
+//            }
+//        }
         Column(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -209,7 +213,7 @@ private fun Reviews(
 
 @Composable
 private fun SimilarMovies(
-    similarMovies: List<Bitmap>
+    similarMovies: List<String>
 ) {
     Paragraph(title = "Similar Movies") {
         Row(
@@ -223,8 +227,8 @@ private fun SimilarMovies(
                         .width(140.dp)
                         .clip(RoundedCornerShape(8.dp))
                 ) {
-                    Image(
-                        bitmap = it.asImageBitmap(),
+                    AsyncImage(
+                        model = it,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                     )

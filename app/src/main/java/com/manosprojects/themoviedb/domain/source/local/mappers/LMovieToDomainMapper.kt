@@ -1,17 +1,16 @@
 package com.manosprojects.themoviedb.domain.source.local.mappers
 
-import android.graphics.Bitmap
 import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.source.local.data.LMovie
 import com.manosprojects.themoviedb.utils.formatStringDateToLocalDate
 
-fun LMovie.mapToDomain(image: Bitmap?): DMovie {
+fun LMovie.mapToDomain(imageUrl: String): DMovie {
     return DMovie(
         movieId = movieId,
         title = title,
         releaseDate = formatStringDateToLocalDate(releaseDate),
         rating = rating,
-        image = image,
+        imageUrl = imageUrl,
         isFavourite = isFavourite,
     )
 }

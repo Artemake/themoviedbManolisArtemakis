@@ -115,7 +115,7 @@ class HomeViewModel @Inject constructor(
             movieId = movieId,
             releaseDate = formatDomainDateToUIDate(releaseDate),
             rating = rating,
-            image = image,
+            imageUrl = imageUrl,
             isFavorite = isFavourite,
         )
     }

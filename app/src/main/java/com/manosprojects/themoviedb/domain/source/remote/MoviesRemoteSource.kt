@@ -36,8 +36,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
             try {
                 val list: MutableList<DMovie> = mutableListOf()
                 moviesAPI.getMovies(pageCount).results.map {
-                    val bitmap = downloadImage(it.backdrop_path)
-                    list.add(it.mapToDomain(bitmap))
+                    list.add(it.mapToDomain(baseUrl + it.backdrop_path))
                     emit(list)
                 }
                 pageCount++
@@ -51,19 +50,16 @@ class MoviesRemoteSourceImpl @Inject constructor(
         return flow {
             try {
                 val movieDetailsResponse = moviesAPI.getMovieDetails(movieId = movieId)
-                val image = downloadImage(movieDetailsResponse.backdrop_path)
                 val similarMoviesResponse = moviesAPI.getSimilarMovies(movieId = movieId)
                 val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
                 val dMovies = mutableListOf<DMovie>()
-                similarMoviesResponse.results.forEach { rMovie ->
-                    val bitmap = downloadImage(rMovie.poster_path)
-                    dMovies.add(rMovie.mapToDomain(bitmap))
+                similarMoviesResponse.results.filter { it.poster_path != null }.forEach { rMovie ->
+                    dMovies.add(rMovie.mapToDomain(baseUrl + rMovie.poster_path))
                     emit(
                         getMovieDetails(
                             movieDetailsResponse = movieDetailsResponse,
                             reviewsResponse = reviewsResponse,
                             dMovies = dMovies,
-                            image = image,
                         )
                     )
                 }
@@ -92,14 +88,13 @@ class MoviesRemoteSourceImpl @Inject constructor(
         movieDetailsResponse: MovieDetailsResponse,
         reviewsResponse: ReviewsResponse,
         dMovies: List<DMovie>,
-        image: Bitmap?
     ): DMovieDetails {
         return DMovieDetails(
             movieId = movieDetailsResponse.id,
             title = movieDetailsResponse.title,
             releaseDate = formatStringDateToLocalDate(movieDetailsResponse.release_date),
             rating = movieDetailsResponse.vote_average,
-            image = image,
+            imageUrl = baseUrl + movieDetailsResponse.backdrop_path,
             genres = movieDetailsResponse.genres.map { it.name },
             runtime = formatRDurationToDuration(movieDetailsResponse.runtime),
             description = movieDetailsResponse.overview,

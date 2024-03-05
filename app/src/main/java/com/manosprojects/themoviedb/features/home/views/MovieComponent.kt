@@ -1,6 +1,5 @@
 package com.manosprojects.themoviedb.features.home.views
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -21,12 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.manosprojects.themoviedb.R
 
 @Composable
@@ -35,7 +32,7 @@ fun MovieComponent(
     releaseDate: String,
     rating: Float,
     isFavourite: Boolean,
-    image: Bitmap?,
+    imageUrl: String,
     onFavouritePressed: () -> Unit,
     onMoviePressed: () -> Unit,
 ) {
@@ -51,9 +48,7 @@ fun MovieComponent(
                 onMoviePressed()
             }
     ) {
-        image?.let {
-            BackgroundImage(image = it)
-        }
+        BackgroundImage(imageUrl = imageUrl)
         Content(
             title = title,
             rating = rating,
@@ -66,13 +61,8 @@ fun MovieComponent(
 }
 
 @Composable
-private fun BackgroundImage(image: Bitmap) {
-    Image(
-        modifier = Modifier.fillMaxSize(),
-        bitmap = image.asImageBitmap(),
-        contentDescription = null,
-        contentScale = ContentScale.Fit
-    )
+private fun BackgroundImage(imageUrl: String) {
+    AsyncImage(model = imageUrl, contentDescription = null)
 }
 
 @Composable
@@ -126,7 +116,7 @@ private fun MovieComponentPreview() {
         title = "Title",
         releaseDate = "23-12-25",
         rating = 5.0f,
-        image = null,
+        imageUrl = "image",
         isFavourite = false,
         onFavouritePressed = { },
         onMoviePressed = {})
