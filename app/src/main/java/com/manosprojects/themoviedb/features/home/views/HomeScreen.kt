@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.manosprojects.themoviedb.features.home.contract.HomeContract
+import com.manosprojects.themoviedb.features.home.data.HomeMovieModel
 import com.manosprojects.themoviedb.features.home.viewmodels.HomeViewModel
 
 @Composable
@@ -42,18 +43,15 @@ fun HomeScreen(
             }
             val item = state.movies[it]
             MovieComponent(
-                title = item.title,
-                releaseDate = item.releaseDate,
-                rating = item.rating,
-                image = item.image,
-                isFavourite = item.isFavorite,
-                onFavouritePressed = {
+                homeMovieModel = item,
+                onFavouritePressed = { homeMovieModel ->
                     homeViewModel.setEvent(
-                        HomeContract.Event.OnFavoritePressed(item)
+                        HomeContract.Event.OnFavoritePressed(homeMovieModel)
                     )
-                }, onMoviePressed = {
+                },
+                onMoviePressed = { homeMovieModel ->
                     homeViewModel.setEvent(
-                        HomeContract.Event.OnMoviePressed(item)
+                        HomeContract.Event.OnMoviePressed(homeMovieModel)
                     )
                 })
         }
@@ -65,6 +63,26 @@ fun HomeScreen(
         }
     }
 
+}
+
+@Composable
+private fun MovieComponent(
+    homeMovieModel: HomeMovieModel,
+    onFavouritePressed: (HomeMovieModel) -> Unit,
+    onMoviePressed: (HomeMovieModel) -> Unit,
+) {
+    MovieComponent(
+        title = homeMovieModel.title,
+        releaseDate = homeMovieModel.releaseDate,
+        rating = homeMovieModel.rating,
+        image = homeMovieModel.image,
+        isFavourite = homeMovieModel.isFavorite,
+        onFavouritePressed = {
+            onFavouritePressed(homeMovieModel)
+        }, onMoviePressed = {
+            onMoviePressed(homeMovieModel)
+        }
+    )
 }
 
 @Composable

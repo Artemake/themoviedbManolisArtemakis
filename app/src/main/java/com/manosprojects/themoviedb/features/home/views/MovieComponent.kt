@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,45 +52,68 @@ fun MovieComponent(
             }
     ) {
         image?.let {
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit
-            )
+            BackgroundImage(image = it)
         }
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.BottomStart),
-            verticalArrangement = Arrangement.SpaceEvenly
+        Content(
+            title = title,
+            rating = rating,
+            releaseDate = releaseDate,
+            isFavourite = isFavourite,
+            onFavouritePressed = onFavouritePressed
+        )
+
+    }
+}
+
+@Composable
+private fun BackgroundImage(image: Bitmap) {
+    Image(
+        modifier = Modifier.fillMaxSize(),
+        bitmap = image.asImageBitmap(),
+        contentDescription = null,
+        contentScale = ContentScale.Fit
+    )
+}
+
+@Composable
+private fun BoxScope.Content(
+    title: String,
+    rating: Float,
+    releaseDate: String,
+    isFavourite: Boolean,
+    onFavouritePressed: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .align(Alignment.BottomStart),
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.inverseOnSurface,
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = title,
-                color = MaterialTheme.colorScheme.inverseOnSurface,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+            RatingStarComponent(
+                rating = rating.toDouble()
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RatingStarComponent(
-                    rating = rating.toDouble()
-                )
 
-                Text(
-                    text = releaseDate,
-                    color = MaterialTheme.colorScheme.inverseOnSurface,
-                    style = MaterialTheme.typography.bodySmall
-                )
+            Text(
+                text = releaseDate,
+                color = MaterialTheme.colorScheme.inverseOnSurface,
+                style = MaterialTheme.typography.bodySmall
+            )
 
-                IconButton(onClick = onFavouritePressed) {
-                    Image(
-                        painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_24_unselected),
-                        contentDescription = null
-                    )
-                }
+            IconButton(onClick = onFavouritePressed) {
+                Image(
+                    painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_24_unselected),
+                    contentDescription = null
+                )
             }
         }
     }

@@ -2,7 +2,6 @@ package com.manosprojects.themoviedb.features.home.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.manosprojects.themoviedb.domain.data.DMovie
-import com.manosprojects.themoviedb.domain.data.DomainState
 import com.manosprojects.themoviedb.domain.usecase.GetMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.LoadMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.MarkMovieAsFavouriteUC
@@ -11,7 +10,7 @@ import com.manosprojects.themoviedb.features.home.data.HomeMovieModel
 import com.manosprojects.themoviedb.mvibase.BaseViewModel
 import com.manosprojects.themoviedb.utils.formatDomainDateToUIDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,24 +22,16 @@ class HomeViewModel @Inject constructor(
 ) :
     BaseViewModel<HomeContract.Event, HomeContract.State, HomeContract.Effect>() {
 
-    private val errorMessage = "Something went wrong with the request"
-
     init {
         viewModelScope.launch {
-            getMoviesUC.execute().collect {
+            getMoviesUC.execute().onCompletion {
+                changeLoadingOfState(false)
+            }.collect {
                 it.first?.let {
                     setState {
                         copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
                     }
-                } ?: setEffect {
-                    HomeContract.Effect.ShowSnack(message = errorMessage)
-                }
-
-                if (it.second == DomainState.LOAD_COMPLETE) {
-                    setState {
-                        copy(showLoading = false)
-                    }
-                }
+                } ?: setErrorEffect()
             }
         }
     }
@@ -82,33 +73,39 @@ class HomeViewModel @Inject constructor(
         if (uiState.value.showLoading) {
             return
         }
-        setState {
-            copy(showLoading = true)
-        }
+        changeLoadingOfState(true)
         viewModelScope.launch {
-            val deferred = async {
-                loadMoviesUC.execute().collect { newMovies ->
-                    newMovies?.let {
-                        setState {
-                            val newMoviesList = buildList {
-                                addAll(movies)
-                                newMovies.forEach { dMovie ->
-                                    if (!movies.any { it.movieId == dMovie.movieId }) {
-                                        add(dMovie.mapToUIModel())
-                                    }
-                                }
-                            }
-                            copy(movies = newMoviesList)
-                        }
-                    } ?: setEffect {
-                        HomeContract.Effect.ShowSnack(message = errorMessage)
-                    }
+            loadMoviesUC.execute()
+                .onCompletion {
+                    changeLoadingOfState(false)
                 }
+                .collect { newMovies ->
+                    newMovies?.let {
+                        changeMoviesOfState(newMovies.map { it.mapToUIModel() })
+                    } ?: setErrorEffect()
+                }
+        }
+    }
+
+    private fun changeLoadingOfState(showLoading: Boolean) {
+        setState {
+            copy(showLoading = showLoading)
+        }
+    }
+
+    private fun changeMoviesOfState(newMovies: List<HomeMovieModel>) {
+        setState {
+            val newSet = buildSet {
+                addAll(movies + newMovies)
             }
-            deferred.await()
-            setState {
-                copy(showLoading = false)
-            }
+            copy(movies = newSet.toList())
+        }
+    }
+
+    private fun setErrorEffect() {
+        val errorMessage = "Something went wrong with the request"
+        setEffect {
+            HomeContract.Effect.ShowSnack(message = errorMessage)
         }
     }
 
