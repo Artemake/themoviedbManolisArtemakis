@@ -5,13 +5,13 @@ import com.manosprojects.themoviedb.domain.repository.MoviesRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-interface LoadMovieDetails {
+interface LoadMovieDetailsUC {
     fun execute(movieId: Long): Flow<DMovieDetails?>
 }
 
-class LoadMovieDetailsImpl @Inject constructor(
+class LoadMovieDetailsUCImpl @Inject constructor(
     private val repository: MoviesRepository
-) : LoadMovieDetails {
+) : LoadMovieDetailsUC {
     override fun execute(movieId: Long): Flow<DMovieDetails?> {
         return repository.loadMovieDetails(movieId = movieId)
     }

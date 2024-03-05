@@ -3,7 +3,7 @@ package com.manosprojects.themoviedb.features.moviedetails.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manosprojects.themoviedb.domain.data.DMovieDetails
-import com.manosprojects.themoviedb.domain.usecase.LoadMovieDetails
+import com.manosprojects.themoviedb.domain.usecase.LoadMovieDetailsUC
 import com.manosprojects.themoviedb.features.moviedetails.contract.MovieDetailsContract
 import com.manosprojects.themoviedb.features.moviedetails.data.MovieDetailsModel
 import com.manosprojects.themoviedb.features.moviedetails.data.MovieDetailsReviewModel
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = MovieDetailsViewModel.MovieDetailsViewModelFactory::class)
 class MovieDetailsViewModel @AssistedInject constructor(
     @Assisted private val movieId: Long,
-    private val loadMovieDetails: LoadMovieDetails,
+    private val loadMovieDetailsUC: LoadMovieDetailsUC,
 ) : ViewModel() {
 
     @AssistedFactory
@@ -34,7 +34,7 @@ class MovieDetailsViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            loadMovieDetails.execute(movieId).collect {
+            loadMovieDetailsUC.execute(movieId).collect {
                 it?.apply {
                     _uiState.value = MovieDetailsContract.State.Data(mapToUIModel())
                 }
