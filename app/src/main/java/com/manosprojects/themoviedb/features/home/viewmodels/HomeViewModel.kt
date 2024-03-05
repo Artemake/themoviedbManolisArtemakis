@@ -1,14 +1,13 @@
 package com.manosprojects.themoviedb.features.home.viewmodels
 
 import androidx.lifecycle.viewModelScope
-import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.usecase.GetMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.LoadMoviesUC
 import com.manosprojects.themoviedb.domain.usecase.MarkMovieAsFavouriteUC
 import com.manosprojects.themoviedb.features.home.contract.HomeContract
 import com.manosprojects.themoviedb.features.home.data.HomeMovieModel
+import com.manosprojects.themoviedb.features.home.mappers.mapToUIModel
 import com.manosprojects.themoviedb.mvibase.BaseViewModel
-import com.manosprojects.themoviedb.utils.formatDomainDateToUIDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
@@ -64,6 +63,7 @@ class HomeViewModel @Inject constructor(
             val newMovies = loadMoviesUC.execute()
             if (newMovies == null) {
                 setErrorEffect()
+                setState { copy(refreshing = false) }
             } else {
                 setState {
                     val newSet = buildSet {
@@ -104,12 +104,15 @@ class HomeViewModel @Inject constructor(
             val newMovies = loadMoviesUC.execute()
             if (newMovies == null) {
                 setErrorEffect()
+                setState {
+                    copy(showLoading = false)
+                }
             } else {
                 setState {
                     val newSet = buildSet {
                         addAll(movies + newMovies.map { it.mapToUIModel() })
                     }
-                    copy(movies = newSet.toList(), showLoading = true)
+                    copy(movies = newSet.toList(), showLoading = false)
                 }
             }
         }
@@ -120,16 +123,5 @@ class HomeViewModel @Inject constructor(
         setEffect {
             HomeContract.Effect.ShowSnack(message = errorMessage)
         }
-    }
-
-    private fun DMovie.mapToUIModel(): HomeMovieModel {
-        return HomeMovieModel(
-            title = title,
-            movieId = movieId,
-            releaseDate = formatDomainDateToUIDate(releaseDate),
-            rating = rating,
-            imageUrl = imageUrl,
-            isFavorite = isFavourite,
-        )
     }
 }
