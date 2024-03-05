@@ -82,4 +82,10 @@ dependencies {
     val retrofitVersion = "2.9.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
+
+    // tests
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("app.cash.turbine:turbine:1.0.0")
 }
