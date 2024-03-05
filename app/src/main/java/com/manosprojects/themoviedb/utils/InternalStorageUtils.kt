@@ -2,33 +2,13 @@ package com.manosprojects.themoviedb.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
-
-suspend fun loadImage(imageName: String, context: Context): Bitmap? {
-    return withContext(Dispatchers.IO) {
-        try {
-            val file = File(context.filesDir, imageName)
-            if (file.exists()) {
-                val inputStream = FileInputStream(file)
-                BitmapFactory.decodeStream(inputStream)
-            } else {
-                null
-            }
-        } catch (e: IOException) {
-            null
-        }
-    }
-}
 
 fun storeImage(imageFile: String, image: Bitmap, context: Context) {
     val file = File(context.filesDir, imageFile)

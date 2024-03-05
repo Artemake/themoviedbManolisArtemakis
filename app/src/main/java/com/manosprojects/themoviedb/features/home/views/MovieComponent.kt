@@ -62,7 +62,10 @@ fun MovieComponent(
 
 @Composable
 private fun BackgroundImage(imageUrl: String) {
-    AsyncImage(model = imageUrl, contentDescription = null)
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = null
+    )
 }
 
 @Composable

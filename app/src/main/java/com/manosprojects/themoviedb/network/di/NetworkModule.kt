@@ -30,4 +30,14 @@ object NetworkDI {
             .build()
     }
 
+    @Provides
+    @Singleton
+    fun provideGeneralAPI(retrofit: Retrofit): GeneralAPI {
+        return retrofit.create(GeneralAPI::class.java)
+    }
+
+    @Provides
+    fun provideImageDownloader(imageDownloaderImpl: ImageDownloaderImpl): ImageDownloader {
+        return imageDownloaderImpl
+    }
 }

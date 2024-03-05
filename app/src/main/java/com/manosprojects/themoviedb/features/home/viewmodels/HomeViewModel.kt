@@ -25,13 +25,17 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getMoviesUC.execute().onCompletion {
-                changeLoadingOfState(false)
-            }.collect {
-                it.first?.let {
-                    setState {
-                        copy(movies = it.map { dMovie -> dMovie.mapToUIModel() })
-                    }
-                } ?: setErrorEffect()
+                changeOfState(
+                    loading = false
+                )
+            }.collect { movies ->
+                if (movies == null) {
+                    setErrorEffect()
+                }
+                changeOfState(
+                    newMovies = movies?.map { it.mapToUIModel() } ?: emptyList(),
+                    loading = true
+                )
             }
         }
     }
@@ -73,32 +77,29 @@ class HomeViewModel @Inject constructor(
         if (uiState.value.showLoading) {
             return
         }
-        changeLoadingOfState(true)
+        changeOfState(loading = true)
         viewModelScope.launch {
-            loadMoviesUC.execute()
-                .onCompletion {
-                    changeLoadingOfState(false)
-                }
-                .collect { newMovies ->
-                    newMovies?.let {
-                        changeMoviesOfState(newMovies.map { it.mapToUIModel() })
-                    } ?: setErrorEffect()
-                }
+            val newMovies = loadMoviesUC.execute()
+            if (newMovies == null) {
+                setErrorEffect()
+            }
+            changeOfState(
+                newMovies = newMovies?.map { it.mapToUIModel() } ?: emptyList(),
+                loading = false
+            )
         }
     }
 
-    private fun changeLoadingOfState(showLoading: Boolean) {
-        setState {
-            copy(showLoading = showLoading)
-        }
-    }
-
-    private fun changeMoviesOfState(newMovies: List<HomeMovieModel>) {
+    private fun changeOfState(
+        newMovies: List<HomeMovieModel> = emptyList(),
+        loading: Boolean?
+    ) {
         setState {
             val newSet = buildSet {
                 addAll(movies + newMovies)
             }
-            copy(movies = newSet.toList())
+            val showLoading = loading ?: showLoading
+            copy(movies = newSet.toList(), showLoading = showLoading)
         }
     }
 

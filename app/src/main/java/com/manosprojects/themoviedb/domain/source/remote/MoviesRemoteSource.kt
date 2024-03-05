@@ -1,7 +1,5 @@
 package com.manosprojects.themoviedb.domain.source.remote
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.data.DMovieDetails
 import com.manosprojects.themoviedb.domain.data.DReview
@@ -11,13 +9,11 @@ import com.manosprojects.themoviedb.domain.source.remote.data.ReviewsResponse
 import com.manosprojects.themoviedb.domain.source.remote.mappers.mapToDomain
 import com.manosprojects.themoviedb.utils.formatRDurationToDuration
 import com.manosprojects.themoviedb.utils.formatStringDateToLocalDate
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 interface MoviesRemoteSource {
-    fun loadMovies(): Flow<List<DMovie>?>
-    fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?>
+    suspend fun loadMovies(): List<DMovie>?
+    suspend fun loadMovieDetails(movieId: Long): DMovieDetails?
     fun incrementPage()
 }
 
@@ -31,57 +27,40 @@ class MoviesRemoteSourceImpl @Inject constructor(
     // endpoint
     private val baseUrl = "https://image.tmdb.org/t/p/original"
 
-    override fun loadMovies(): Flow<List<DMovie>?> {
-        return flow {
-            try {
-                val list: MutableList<DMovie> = mutableListOf()
-                moviesAPI.getMovies(pageCount).results.map {
-                    list.add(it.mapToDomain(baseUrl + it.backdrop_path))
-                    emit(list)
-                }
-                pageCount++
-            } catch (e: Exception) {
-                emit(null)
-            }
-        }
-    }
-
-    override fun loadMovieDetails(movieId: Long): Flow<DMovieDetails?> {
-        return flow {
-            try {
-                val movieDetailsResponse = moviesAPI.getMovieDetails(movieId = movieId)
-                val similarMoviesResponse = moviesAPI.getSimilarMovies(movieId = movieId)
-                val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
-                val dMovies = mutableListOf<DMovie>()
-                similarMoviesResponse.results.filter { it.poster_path != null }.forEach { rMovie ->
-                    dMovies.add(rMovie.mapToDomain(baseUrl + rMovie.poster_path))
-                    emit(
-                        getMovieDetails(
-                            movieDetailsResponse = movieDetailsResponse,
-                            reviewsResponse = reviewsResponse,
-                            dMovies = dMovies,
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-                emit(null)
-            }
-        }
-    }
-
-    override fun incrementPage() {
-        pageCount++
-    }
-
-    private suspend fun downloadImage(imagePath: String): Bitmap? {
+    override suspend fun loadMovies(): List<DMovie>? {
         return try {
-            val url = baseUrl + imagePath
-            val responseBody = moviesAPI.downloadImage(url)
-            val stream = responseBody.byteStream()
-            BitmapFactory.decodeStream(stream)
+            moviesAPI.getMovies(pageCount).results.map { rMovie ->
+                rMovie.mapToDomain(baseUrl + rMovie.backdrop_path)
+            }.also { pageCount++ }
         } catch (e: Exception) {
             null
         }
+
+    }
+
+    override suspend fun loadMovieDetails(movieId: Long): DMovieDetails? {
+        return try {
+            val movieDetailsResponse = moviesAPI.getMovieDetails(movieId = movieId)
+            val similarMoviesResponse = moviesAPI.getSimilarMovies(movieId = movieId)
+            val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
+            val dMovies =
+                similarMoviesResponse.results.filter { it.poster_path != null }.map { rMovie ->
+                    rMovie.mapToDomain(baseUrl + rMovie.poster_path)
+
+                }
+            getMovieDetails(
+                movieDetailsResponse = movieDetailsResponse,
+                reviewsResponse = reviewsResponse,
+                dMovies = dMovies,
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+
+    override fun incrementPage() {
+        pageCount++
     }
 
     private fun getMovieDetails(

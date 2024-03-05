@@ -4,13 +4,13 @@ import com.manosprojects.themoviedb.domain.data.DMovie
 import com.manosprojects.themoviedb.domain.source.local.data.LMovie
 import com.manosprojects.themoviedb.utils.formatStringDateToLocalDate
 
-fun LMovie.mapToDomain(imageUrl: String): DMovie {
+fun LMovie.mapToDomain(): DMovie {
     return DMovie(
         movieId = movieId,
         title = title,
         releaseDate = formatStringDateToLocalDate(releaseDate),
         rating = rating,
-        imageUrl = imageUrl,
+        imageUrl = imageFile,
         isFavourite = isFavourite,
     )
 }

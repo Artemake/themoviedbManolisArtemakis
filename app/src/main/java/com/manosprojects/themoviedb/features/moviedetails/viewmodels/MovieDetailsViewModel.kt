@@ -39,11 +39,9 @@ class MovieDetailsViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            loadMovieDetailsUC.execute(movieId).collect {
-                it?.apply {
-                    _uiState.value = MovieDetailsContract.State.Data(mapToUIModel())
-                } ?: _effect.send(MovieDetailsContract.ErrorEffect)
-            }
+            loadMovieDetailsUC.execute(movieId)?.let {
+                _uiState.value = MovieDetailsContract.State.Data(it.mapToUIModel())
+            } ?: _effect.send(MovieDetailsContract.ErrorEffect)
         }
     }
 

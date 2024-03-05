@@ -6,4 +6,5 @@ data class LMovie(
     val releaseDate: String,
     val rating: Float,
     val isFavourite: Boolean,
+    val imageFile: String,
 )
