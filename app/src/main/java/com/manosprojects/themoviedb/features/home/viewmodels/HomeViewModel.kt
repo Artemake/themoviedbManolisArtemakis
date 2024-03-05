@@ -25,17 +25,18 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getMoviesUC.execute().onCompletion {
-                changeOfState(
-                    loading = false
-                )
-            }.collect { movies ->
-                if (movies == null) {
+                setState { copy(showLoading = false) }
+            }.collect { newMovies ->
+                if (newMovies == null) {
                     setErrorEffect()
+                } else {
+                    setState {
+                        val newSet = buildSet {
+                            addAll(movies + newMovies.map { it.mapToUIModel() })
+                        }
+                        copy(movies = newSet.toList())
+                    }
                 }
-                changeOfState(
-                    newMovies = movies?.map { it.mapToUIModel() } ?: emptyList(),
-                    loading = true
-                )
             }
         }
     }
@@ -63,11 +64,14 @@ class HomeViewModel @Inject constructor(
             val newMovies = loadMoviesUC.execute()
             if (newMovies == null) {
                 setErrorEffect()
+            } else {
+                setState {
+                    val newSet = buildSet {
+                        addAll(movies + newMovies.map { it.mapToUIModel() })
+                    }
+                    copy(movies = newSet.toList(), refreshing = false)
+                }
             }
-            changeOfState(
-                newMovies = newMovies?.map { it.mapToUIModel() } ?: emptyList(),
-                refreshing = false
-            )
         }
     }
 
@@ -95,30 +99,19 @@ class HomeViewModel @Inject constructor(
         if (uiState.value.showLoading) {
             return
         }
-        changeOfState(loading = true)
+        setState { copy(showLoading = true) }
         viewModelScope.launch {
             val newMovies = loadMoviesUC.execute()
             if (newMovies == null) {
                 setErrorEffect()
+            } else {
+                setState {
+                    val newSet = buildSet {
+                        addAll(movies + newMovies.map { it.mapToUIModel() })
+                    }
+                    copy(movies = newSet.toList(), showLoading = true)
+                }
             }
-            changeOfState(
-                newMovies = newMovies?.map { it.mapToUIModel() } ?: emptyList(),
-                loading = false
-            )
-        }
-    }
-
-    private fun changeOfState(
-        newMovies: List<HomeMovieModel> = emptyList(),
-        loading: Boolean? = null,
-        refreshing: Boolean = false
-    ) {
-        setState {
-            val newSet = buildSet {
-                addAll(movies + newMovies)
-            }
-            val showLoading = loading ?: showLoading
-            copy(movies = newSet.toList(), showLoading = showLoading, refreshing = refreshing)
         }
     }
 
