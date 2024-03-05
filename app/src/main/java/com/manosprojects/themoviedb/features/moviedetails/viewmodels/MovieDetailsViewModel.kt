@@ -13,8 +13,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = MovieDetailsViewModel.MovieDetailsViewModelFactory::class)
@@ -32,12 +34,15 @@ class MovieDetailsViewModel @AssistedInject constructor(
         MutableStateFlow(MovieDetailsContract.State.Initial)
     val uiState = _uiState.asStateFlow()
 
+    private val _effect: Channel<MovieDetailsContract.ErrorEffect> = Channel()
+    val effect = _effect.receiveAsFlow()
+
     init {
         viewModelScope.launch {
             loadMovieDetailsUC.execute(movieId).collect {
                 it?.apply {
                     _uiState.value = MovieDetailsContract.State.Data(mapToUIModel())
-                }
+                } ?: _effect.send(MovieDetailsContract.ErrorEffect)
             }
         }
     }

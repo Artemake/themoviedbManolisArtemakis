@@ -9,4 +9,5 @@ object MovieDetailsContract {
         data class Data(val movieDetails: MovieDetailsModel) : State
     }
 
+    data object ErrorEffect
 }
