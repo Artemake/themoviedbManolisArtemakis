@@ -64,6 +64,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    // material 2
+    implementation("androidx.compose.material:material:1.6.2")
+
     // constraint layout compose
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 

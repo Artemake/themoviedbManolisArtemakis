@@ -3,9 +3,14 @@ package com.manosprojects.themoviedb.features.home.views
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -14,11 +19,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.manosprojects.themoviedb.features.home.contract.HomeContract
 import com.manosprojects.themoviedb.features.home.data.HomeMovieModel
 import com.manosprojects.themoviedb.features.home.viewmodels.HomeViewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     navigateToMovie: (Long) -> Unit,
@@ -35,30 +42,47 @@ fun HomeScreen(
     }
 
     val state = homeViewModel.uiState.collectAsState().value
+    val pullRefreshState =
+        rememberPullRefreshState(
+            refreshing = state.refreshing,
+            onRefresh = { homeViewModel.setEvent(HomeContract.Event.OnPulledToRefresh) })
+    Box(
+        modifier = Modifier
+            .pullRefresh(pullRefreshState)
+            .fillMaxSize()
+    ) {
+        PullRefreshIndicator(
+            refreshing = state.refreshing, state = pullRefreshState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .zIndex(1f)
+        )
+        LazyColumn {
 
-    LazyColumn {
-        items(state.movies.size) {
-            if (it == state.movies.size - 1) {
-                homeViewModel.setEvent(HomeContract.Event.OnScrolledToEnd)
+            items(state.movies.size) {
+
+                if (it == state.movies.size - 1) {
+                    homeViewModel.setEvent(HomeContract.Event.OnScrolledToEnd)
+                }
+                val item = state.movies[it]
+                MovieComponent(
+                    homeMovieModel = item,
+                    onFavouritePressed = { homeMovieModel ->
+                        homeViewModel.setEvent(
+                            HomeContract.Event.OnFavoritePressed(homeMovieModel)
+                        )
+                    },
+                    onMoviePressed = { homeMovieModel ->
+                        homeViewModel.setEvent(
+                            HomeContract.Event.OnMoviePressed(homeMovieModel)
+                        )
+                    })
             }
-            val item = state.movies[it]
-            MovieComponent(
-                homeMovieModel = item,
-                onFavouritePressed = { homeMovieModel ->
-                    homeViewModel.setEvent(
-                        HomeContract.Event.OnFavoritePressed(homeMovieModel)
-                    )
-                },
-                onMoviePressed = { homeMovieModel ->
-                    homeViewModel.setEvent(
-                        HomeContract.Event.OnMoviePressed(homeMovieModel)
-                    )
-                })
-        }
 
-        item {
-            if (state.showLoading) {
-                LoadingAnimation()
+            item {
+                if (state.showLoading && !state.refreshing) {
+                    LoadingAnimation()
+                }
             }
         }
     }

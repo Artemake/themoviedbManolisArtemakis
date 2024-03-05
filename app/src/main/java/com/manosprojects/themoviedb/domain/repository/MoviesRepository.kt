@@ -67,23 +67,4 @@ class MoviesRepositoryImpl @Inject constructor(
     override fun markMovieAsFavourite(movieId: Long, isFavourite: Boolean) {
         moviesLocalSource.setFavourite(movieId = movieId, isFavourite = isFavourite)
     }
-
-//    private fun loadInitialMoviesFromRemote(): Flow<Pair<List<DMovie>?, DomainState>> {
-//        var dMovies: List<DMovie>? = null
-//        return moviesRemoteSource.loadMovies().map { dMoviesList ->
-//            dMoviesList?.map { dMovie ->
-//                dMovie.copy(
-//                    isFavourite = moviesLocalSource.isMovieFavourite(
-//                        dMovie.movieId
-//                    )
-//                )
-//            }.also { dMovies = dMoviesList } to DomainState.LOADING
-//        }.onCompletion {
-//            emit(dMovies to DomainState.LOAD_COMPLETE)
-//            withContext(Dispatchers.IO) {
-//                dMovies?.let { moviesLocalSource.storeMovies(it) }
-//            }
-//        }
-//    }
-
 }

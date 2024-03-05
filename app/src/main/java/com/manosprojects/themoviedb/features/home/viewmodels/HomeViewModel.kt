@@ -18,7 +18,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getMoviesUC: GetMoviesUC,
     private val loadMoviesUC: LoadMoviesUC,
-    private val markMovieAsFavouriteUC: MarkMovieAsFavouriteUC
+    private val markMovieAsFavouriteUC: MarkMovieAsFavouriteUC,
 ) :
     BaseViewModel<HomeContract.Event, HomeContract.State, HomeContract.Effect>() {
 
@@ -42,6 +42,7 @@ class HomeViewModel @Inject constructor(
 
     override fun createInitialState() = HomeContract.State(
         showLoading = true,
+        refreshing = false,
         movies = emptyList()
     )
 
@@ -50,6 +51,23 @@ class HomeViewModel @Inject constructor(
             is HomeContract.Event.OnFavoritePressed -> onFavoritePressed(event.movie)
             is HomeContract.Event.OnMoviePressed -> onMoviePressed(event.movie.movieId)
             is HomeContract.Event.OnScrolledToEnd -> onScrolledToEnd()
+            is HomeContract.Event.OnPulledToRefresh -> onPulledToRefresh()
+        }
+    }
+
+    private fun onPulledToRefresh() {
+        setState {
+            copy(refreshing = true, movies = emptyList())
+        }
+        viewModelScope.launch {
+            val newMovies = loadMoviesUC.execute()
+            if (newMovies == null) {
+                setErrorEffect()
+            }
+            changeOfState(
+                newMovies = newMovies?.map { it.mapToUIModel() } ?: emptyList(),
+                refreshing = false
+            )
         }
     }
 
@@ -92,14 +110,15 @@ class HomeViewModel @Inject constructor(
 
     private fun changeOfState(
         newMovies: List<HomeMovieModel> = emptyList(),
-        loading: Boolean?
+        loading: Boolean? = null,
+        refreshing: Boolean = false
     ) {
         setState {
             val newSet = buildSet {
                 addAll(movies + newMovies)
             }
             val showLoading = loading ?: showLoading
-            copy(movies = newSet.toList(), showLoading = showLoading)
+            copy(movies = newSet.toList(), showLoading = showLoading, refreshing = refreshing)
         }
     }
 

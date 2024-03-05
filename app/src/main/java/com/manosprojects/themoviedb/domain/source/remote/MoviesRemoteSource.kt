@@ -25,6 +25,7 @@ class MoviesRemoteSourceImpl @Inject constructor(
 
     // ideally we would fetch the info for this regarding the size of the image from the dedicated
     // endpoint
+
     private val baseUrl = "https://image.tmdb.org/t/p/original"
 
     override suspend fun loadMovies(): List<DMovie>? {
