@@ -23,9 +23,6 @@ class MoviesRemoteSourceImpl @Inject constructor(
 
     private var pageCount = 1
 
-    // ideally we would fetch the info for this regarding the size of the image from the dedicated
-    // endpoint
-
     private val baseUrl = "https://image.tmdb.org/t/p/original"
 
     override suspend fun loadMovies(): List<DMovie>? {
@@ -41,9 +38,9 @@ class MoviesRemoteSourceImpl @Inject constructor(
 
     override suspend fun loadMovieDetails(movieId: Long): DMovieDetails? {
         return try {
-            val movieDetailsResponse = moviesAPI.getMovieDetails(movieId = movieId)
             val similarMoviesResponse = moviesAPI.getSimilarMovies(movieId = movieId)
             val reviewsResponse = moviesAPI.getReviews(movieId = movieId)
+            val movieDetailsResponse = moviesAPI.getMovieDetails(movieId = movieId)
             val dMovies =
                 similarMoviesResponse.results.filter { it.poster_path != null }.map { rMovie ->
                     rMovie.mapToDomain(baseUrl + rMovie.poster_path)
