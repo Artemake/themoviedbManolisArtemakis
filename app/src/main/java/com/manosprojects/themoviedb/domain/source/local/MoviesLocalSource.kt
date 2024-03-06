@@ -90,9 +90,9 @@ class MoviesLocalSourceImpL @Inject constructor(
     }
 
     private fun storeMovieIds(movieIds: List<String>) {
+        val gson = Gson()
+        val json = gson.toJson(movieIds)
         sharedPreferences.edit {
-            val gson = Gson()
-            val json = gson.toJson(movieIds)
             putString(SharedPrefKeys.MOVIE_IDS, json)
         }
     }

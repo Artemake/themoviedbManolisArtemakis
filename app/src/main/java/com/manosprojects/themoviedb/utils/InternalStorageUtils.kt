@@ -22,7 +22,7 @@ fun storeImage(imageFile: String, image: Bitmap, context: Context) {
     }
 }
 
-inline fun <reified T> storeDataToFile(dataFile: String, data: T, context: Context) {
+fun <T> storeDataToFile(dataFile: String, data: T, context: Context) {
     val gson = Gson()
     val jsonString = gson.toJson(data)
 
@@ -37,7 +37,7 @@ inline fun <reified T> storeDataToFile(dataFile: String, data: T, context: Conte
     }
 }
 
-inline fun <reified T> loadData(dataFile: String, context: Context): T? {
+fun <T> loadData(dataFile: String, context: Context): T? {
     val gson = Gson()
     val file = File(context.filesDir, dataFile)
     if (!file.exists()) {
