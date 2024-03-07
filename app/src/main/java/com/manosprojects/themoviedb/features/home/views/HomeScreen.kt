@@ -57,7 +57,9 @@ fun HomeScreen(
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
         )
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
 
             items(state.movies.size) {
 
