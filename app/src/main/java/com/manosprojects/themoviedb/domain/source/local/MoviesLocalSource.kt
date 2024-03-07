@@ -85,7 +85,8 @@ class MoviesLocalSourceImpL @Inject constructor(
     }
 
     private fun loadMovieAndMapToDomain(movieId: String): DMovie? {
-        val lMovie = loadData<LMovie>(dataFile = movieId + dataPostfix, context = context)
+        val lMovie =
+            loadData(dataFile = movieId + dataPostfix, context = context, LMovie::class.java)
         return lMovie?.mapToDomain()
     }
 

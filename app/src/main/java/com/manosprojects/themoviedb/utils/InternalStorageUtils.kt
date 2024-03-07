@@ -3,7 +3,6 @@ package com.manosprojects.themoviedb.utils
 import android.content.Context
 import android.graphics.Bitmap
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileReader
@@ -37,7 +36,7 @@ fun <T> storeDataToFile(dataFile: String, data: T, context: Context) {
     }
 }
 
-fun <T> loadData(dataFile: String, context: Context): T? {
+fun <T> loadData(dataFile: String, context: Context, classOf: Class<T>): T? {
     val gson = Gson()
     val file = File(context.filesDir, dataFile)
     if (!file.exists()) {
@@ -45,9 +44,8 @@ fun <T> loadData(dataFile: String, context: Context): T? {
     }
     return try {
         val reader = FileReader(file)
-        val type = object : TypeToken<T>() {}.type
-        gson.fromJson(reader, type)
-    } catch (e: IOException) {
+        gson.fromJson(reader, classOf)
+    } catch (e: Exception) {
         null
     }
 }

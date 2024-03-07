@@ -45,7 +45,7 @@ class MoviesLocalSourceTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        val functionLoadData: (String, Context) -> LMovie? = ::loadData
+        val functionLoadData: (String, Context, Class<LMovie>) -> LMovie? = ::loadData
         val kFunctionLoadData = functionLoadData as KFunction<*>
         val functionStoreDataToFile: (String, List<DMovie>, Context) -> Unit = ::storeDataToFile
         val kFunctionStoreDataToFile = functionStoreDataToFile as KFunction<*>
@@ -84,15 +84,17 @@ class MoviesLocalSourceTest {
             )
         } returns "[$movieId1, $movieId2]"
         every {
-            loadData<LMovie>(
+            loadData(
                 dataFile = movieId1 + dataPostfix,
-                context = contextMock
+                context = contextMock,
+                classOf = LMovie::class.java
             )
         } returns lMovie(movieId1)
         every {
             loadData<LMovie>(
                 dataFile = movieId2 + dataPostfix,
-                context = contextMock
+                context = contextMock,
+                classOf = LMovie::class.java
             )
         } returns lMovie(movieId2)
 
@@ -107,8 +109,16 @@ class MoviesLocalSourceTest {
         assertThat(actual, equalTo(expected))
         verifyAll {
             sharedPreferencesMock.getString(SharedPrefKeys.MOVIE_IDS, null)
-            loadData<LMovie>(dataFile = movieId1 + dataPostfix, context = contextMock)
-            loadData<LMovie>(dataFile = movieId2 + dataPostfix, context = contextMock)
+            loadData<LMovie>(
+                dataFile = movieId1 + dataPostfix,
+                context = contextMock,
+                classOf = LMovie::class.java
+            )
+            loadData<LMovie>(
+                dataFile = movieId2 + dataPostfix,
+                context = contextMock,
+                classOf = LMovie::class.java
+            )
         }
     }
 
